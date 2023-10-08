@@ -12,6 +12,8 @@ import java.util.List;
 @Repository(value = "productRepo")
 public interface ProductRepo extends JpaRepository<Product, Long> {
     Product getProductById(Long id);
+
+    Product getProductBySlugAndStatus(String slug, Integer status);
     @Query(value = "SELECT DISTINCT p FROM Product p" +
             " JOIN p.sizes s" +
             " JOIN p.colors c" +

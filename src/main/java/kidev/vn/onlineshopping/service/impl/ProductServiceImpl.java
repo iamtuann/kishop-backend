@@ -1,7 +1,10 @@
 package kidev.vn.onlineshopping.service.impl;
 
+import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.entity.Product;
 import kidev.vn.onlineshopping.model.product.ProductBasicModel;
+import kidev.vn.onlineshopping.model.product.ProductDetailModel;
+import kidev.vn.onlineshopping.model.product.ProductModel;
 import kidev.vn.onlineshopping.repository.ProductRepo;
 import kidev.vn.onlineshopping.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,13 @@ public class ProductServiceImpl implements ProductService {
         }
         PageImpl<ProductBasicModel> response = new PageImpl<>(productBasicModels, pageable, productPage.getTotalElements());
         return response;
+    }
+
+    @Override
+    public ProductModel getProductSellingtBySlug(String slug) {
+        Product product = productRepo.getProductBySlugAndStatus(slug, Constants.StatusProduct.SELLING);
+        ProductModel productModel = new ProductModel(product);
+        return productModel;
     }
 
     @Override
