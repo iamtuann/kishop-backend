@@ -2,6 +2,7 @@ package kidev.vn.onlineshopping.service;
 
 import kidev.vn.onlineshopping.entity.Product;
 import kidev.vn.onlineshopping.model.product.ProductBasicModel;
+import kidev.vn.onlineshopping.model.product.ProductModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,6 +17,10 @@ public interface ProductService {
                                           List<String> categoryIds, String brandId,
                                           String sizeId, String colorId,
                                           Boolean sale, Pageable pageable);
+
+    ProductModel getProductSellingtBySlug(String slug);
+
+    List<ProductBasicModel> getTopProductByCreatedDate(int number);
 
     void create(Product product);
 

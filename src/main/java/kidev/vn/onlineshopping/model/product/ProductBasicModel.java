@@ -11,6 +11,7 @@ import java.util.List;
 public class ProductBasicModel {
     private Long id;
     private String name;
+    private String slug;
     private String brand;
     private String description;
     private Long price;
@@ -20,6 +21,7 @@ public class ProductBasicModel {
     public ProductBasicModel(Product p) {
         this.id = p.getId();
         this.name = p.getName();
+        this.slug = p.getSlug();
         this.brand = p.getBrand().getName();
         this.description = p.getDescription();
         this.price = p.getProductPreview().getPrice();
