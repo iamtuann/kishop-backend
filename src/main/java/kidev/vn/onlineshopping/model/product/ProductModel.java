@@ -22,7 +22,7 @@ public class ProductModel {
     private List<ProductDetailModel> productDetails = new ArrayList<>();
     private Date createdDate;
     private Date updatedDate;
-    private ProductDetailModel productPreview;
+    private Long productPreviewId;
 
     public ProductModel(Product p) {
         this.id = p.getId();
@@ -35,6 +35,6 @@ public class ProductModel {
         }
         this.createdDate = p.getCreatedDate();
         this.updatedDate = p.getUpdatedDate();
-        this.productPreview = new ProductDetailModel(p.getProductPreview());
+        this.productPreviewId = p.getProductPreview().getId();
     }
 }

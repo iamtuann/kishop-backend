@@ -57,6 +57,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductBasicModel> getTopProductByCreatedDate(int number) {
+        List<Product> products = productRepo.findLatestProducts(number);
+        List<ProductBasicModel> productBasicModels = new ArrayList<>();
+        if (products != null || products.size() != 0) {
+            for (Product p : products) {
+                productBasicModels.add(new ProductBasicModel(p));
+            }
+        }
+        return productBasicModels;
+    }
+
+    @Override
     public void create(Product product) {
         productRepo.save(product);
     }

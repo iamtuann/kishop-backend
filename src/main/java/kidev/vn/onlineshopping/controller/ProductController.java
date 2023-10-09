@@ -151,7 +151,9 @@ public class ProductController {
                         productImages.add(productImage);
                     }
                 }
-                productImageService.saveAll(productImages);
+                productImages = productImageService.saveAll(productImages);
+                pd.setProductImages(productImages);
+                pd = productDetailService.saveProductDetail(pd);
                 output.add(new ProductDetailResponse(pd));
             }
             product.setColors(colors);
@@ -204,13 +206,17 @@ public class ProductController {
     @PostMapping("create")
     public CommonResponse<?> createProduct(@RequestParam("productId") Long productId,
                                            @RequestParam("status") Integer status,
-                                           @RequestParam("productDetailId") Long detailId) {
+                                           @RequestParam(value = "productDetailId", required = false) Long detailId) {
         CommonResponse<?> response = new CommonResponse<>();
         try {
             Product product = productService.findOne(productId);
             product.setStatus(status);
             ProductDetail productDetail = productDetailService.findOne(detailId);
-            if (productDetail.getProduct().getId() == productId) {
+            if (detailId == null) {
+                product.setProductPreview(product.getProductDetails().get(0));
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
+            } else if (productDetail.getProduct().getId() == productId) {
                 product.setProductPreview(productDetail);
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
@@ -291,6 +297,25 @@ public class ProductController {
             response.setOutput(null);
             response.setError("Có lỗi xảy ra");
             logger.error("Get product detail", e);
+        }
+        return response;
+    }
+
+    @GetMapping("/top-new")
+    public CommonResponse<?> getTopNewProduct(@RequestParam(value = "number", required = false, defaultValue = "4") int number) {
+        CommonResponse<List<ProductBasicModel>> response = new CommonResponse<>();
+        try {
+            List<ProductBasicModel> productModels = productService.getTopProductByCreatedDate(number);
+            response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+            response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
+            response.setError("Thành công");
+            response.setOutput(productModels);
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            response.setOutput(null);
+            response.setError("Có lỗi xảy ra");
+            logger.error("Get top new product", e);
         }
         return response;
     }

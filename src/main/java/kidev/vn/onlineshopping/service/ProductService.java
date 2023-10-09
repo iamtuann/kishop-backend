@@ -20,6 +20,8 @@ public interface ProductService {
 
     ProductModel getProductSellingtBySlug(String slug);
 
+    List<ProductBasicModel> getTopProductByCreatedDate(int number);
+
     void create(Product product);
 
     void update(Product product);
