@@ -20,7 +20,7 @@ public interface ProductService {
 
     ProductModel getProductSellingtBySlug(String slug);
 
-    List<ProductBasicModel> getTopProductByCreatedDate(int number);
+    List<ProductBasicModel> getTopProductByCreatedDate(Pageable pageable);
 
     void create(Product product);
 

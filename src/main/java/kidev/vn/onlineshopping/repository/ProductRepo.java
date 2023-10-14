@@ -13,8 +13,8 @@ import java.util.List;
 public interface ProductRepo extends JpaRepository<Product, Long> {
     Product getProductById(Long id);
 
-    @Query(value = "SELECT p FROM Product p order by p.createdDate DESC ")
-    List<Product> findLatestProducts(int number);
+    @Query(value = "SELECT p FROM Product p")
+    Page<Product> getTopProductByCreatedDate(Pageable pageable);
 
     Product getProductBySlugAndStatus(String slug, Integer status);
     @Query(value = "SELECT DISTINCT p FROM Product p" +
