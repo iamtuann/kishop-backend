@@ -245,6 +245,7 @@ public class ProductController {
                                            @RequestParam(value = "colorId", required = false) String colorId,
                                            @RequestParam(value = "sale", required = false) Boolean sale,
                                            @RequestParam(defaultValue = "1") int page,
+                                           @RequestParam(defaultValue = "25") int size,
                                            @RequestParam(value = "key", required = false) String key,
                                            @RequestParam(value = "orderBy", required = false) String orderBy) {
         CommonResponse<Page<ProductBasicModel>> response = new CommonResponse<>();
@@ -260,7 +261,7 @@ public class ProductController {
             } else {
                 sort = Sort.unsorted().ascending();
             }
-            pageable = PageRequest.of(page - 1, 25, sort);
+            pageable = PageRequest.of(page - 1, size, sort);
             Page<ProductBasicModel> model = productService.searchProduct(name, categoryIds, brandId, sizeId, colorId, sale, pageable);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
@@ -302,10 +303,12 @@ public class ProductController {
     }
 
     @GetMapping("/top-new")
-    public CommonResponse<?> getTopNewProduct(@RequestParam(value = "number", required = false, defaultValue = "4") int number) {
+    public CommonResponse<?> getTopNewProduct(@RequestParam(value = "size", required = false, defaultValue = "4") int size) {
         CommonResponse<List<ProductBasicModel>> response = new CommonResponse<>();
         try {
-            List<ProductBasicModel> productModels = productService.getTopProductByCreatedDate(number);
+            Pageable pageable;
+            pageable = PageRequest.of(0, size, Sort.by("createdDate").descending());
+            List<ProductBasicModel> productModels = productService.getTopProductByCreatedDate(pageable);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setError("Thành công");
