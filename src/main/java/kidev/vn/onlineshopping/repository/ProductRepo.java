@@ -26,10 +26,10 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
             " AND (:brandId IS NULL OR :brandId = '' OR :brandId = p.brand.id)" +
             " AND (:sizeId IS NULL OR :sizeId = '' OR :sizeId = s.id)" +
             " AND (:colorId IS NULL OR :colorId = '' OR :colorId = c.id)" +
-            " AND (:categoryIds IS NULL OR ct.id IN :categoryIds)" +
-            " AND (:sale IS NULL OR :sale = FALSE OR pd.offPrice IS NOT NULL)")
+            " AND (coalesce(:categoryIds, null) IS NULL OR ct.id IN (:categoryIds))" +
+            " AND (:sale IS NULL OR :sale = FALSE OR pd.offPrice IS NOT NULL) ")
     Page<Product>searchProduct(String name,
-                               List<String> categoryIds, String brandId,
+                               List<Long> categoryIds, String brandId,
                                String sizeId, String colorId,
                                Boolean sale, Pageable pageable);
 }

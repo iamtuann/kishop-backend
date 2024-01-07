@@ -35,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductBasicModel> searchProduct(String name,
-                                                 List<String> categoryIds, String brandId,
+                                                 List<Long> categoryIds, String brandId,
                                                  String sizeId, String colorId,
                                                  Boolean sale, Pageable pageable) {
 

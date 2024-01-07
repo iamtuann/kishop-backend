@@ -23,6 +23,7 @@ public class ProductModel {
     private Date createdDate;
     private Date updatedDate;
     private Long productPreviewId;
+    private Integer status;
 
     public ProductModel(Product p) {
         this.id = p.getId();
@@ -36,5 +37,6 @@ public class ProductModel {
         this.createdDate = p.getCreatedDate();
         this.updatedDate = p.getUpdatedDate();
         this.productPreviewId = p.getProductPreview().getId();
+        this.status = p.getStatus();
     }
 }
