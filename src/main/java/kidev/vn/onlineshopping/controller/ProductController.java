@@ -239,7 +239,7 @@ public class ProductController {
 
     @GetMapping("/list")
     public CommonResponse<?> searchProduct(@RequestParam(value = "name", required = false) String name,
-                                           @RequestParam(value = "categoryIds", required = false) List<String> categoryIds,
+                                           @RequestParam(value = "categoryIds", required = false) List<Long> categoryIds,
                                            @RequestParam(value = "brandId", required = false) String brandId,
                                            @RequestParam(value = "sizeId", required = false) String sizeId,
                                            @RequestParam(value = "colorId", required = false) String colorId,
