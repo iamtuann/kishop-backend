@@ -52,8 +52,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductModel getProductSellingtBySlug(String slug) {
         Product product = productRepo.getProductBySlugAndStatus(slug, Constants.StatusProduct.SELLING);
-        ProductModel productModel = new ProductModel(product);
-        return productModel;
+        if (product != null) {
+            ProductModel productModel = new ProductModel(product);
+            return productModel;
+        } else {
+            return null;
+        }
     }
 
     @Override
