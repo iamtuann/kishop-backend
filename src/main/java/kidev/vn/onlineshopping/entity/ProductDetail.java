@@ -21,6 +21,9 @@ public class ProductDetail {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Column(name = "name")
+    private String name;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "color_id", referencedColumnName = "id")
     private Color color;
@@ -39,4 +42,10 @@ public class ProductDetail {
 
     @Column(name = "off_price")
     private Long offPrice;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "image_path")
+    private String imagePath;
 }

@@ -129,24 +129,32 @@ public class ProductController {
                 Color color = colorService.findOne(new Long(model.getColorId()));
                 pd.setColor(color);
                 colors.add(color);
+                pd.setName(model.getName());
                 pd.setStatus(model.getStatus());
                 pd.setPrice(new Long(model.getPrice()));
                 if (model.getOffPrice() != null) {
                     pd.setOffPrice(new Long(model.getOffPrice()));
                 }
                 pd = productDetailService.saveProductDetail(pd);
-                List<ProductImage> productImages = new ArrayList<>();
+                String fileNamePreview = (product.getSlug() + "-preview-" + pd.getName()).replaceAll(" ", "");
+                String uploadDirPreview = storeFolder + fileNamePreview;
+                String imageUrl = storeUrl + fileNamePreview;
+                File destPreview = new File(uploadDirPreview);
+                model.getPreviewImage().transferTo(destPreview);
+                pd.setImageUrl(imageUrl);
+                pd.setImagePath(uploadDirPreview);
 
+                List<ProductImage> productImages = new ArrayList<>();
                 if (model.getImages() != null) {
                     for (MultipartFile image : model.getImages()) {
-                        String fileName = (product.getName() + "-" + pd.getColor().getName() + "-" + image.getOriginalFilename()).replaceAll(" ", "");
+                        String fileName = (product.getSlug() + "-" + pd.getName() + "-" + image.getOriginalFilename()).replaceAll(" ", "");
                         String uploadDir = storeFolder + fileName;
-                        String pathUrl = storeUrl + fileName;
+                        String url = storeUrl + fileName;
                         File dest = new File(uploadDir);
                         image.transferTo(dest);
                         ProductImage productImage = new ProductImage();
                         productImage.setProductDetail(pd);
-                        productImage.setUrl(pathUrl);
+                        productImage.setUrl(url);
                         productImage.setPathUrl(uploadDir);
                         productImages.add(productImage);
                     }
