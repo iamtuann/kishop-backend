@@ -33,10 +33,10 @@ public interface Constants {
     }
 
     public interface StatusProduct {
-        public Integer NOTSELL = 0;
-        public Integer SELLING = 1;
-        public Integer STOPSELL = 2;
-        public Integer STOPIMPORT = 3;
+        public Integer NOTSELL = 0; //Chưa bán
+        public Integer SELLING = 1; // Đang bán
+        public Integer STOPSELL = 2;    // Dừng bán
+        public Integer STOPIMPORT = 3;  // Ngừng nhập
     }
 
     public interface CategoryType {

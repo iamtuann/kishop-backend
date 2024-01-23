@@ -18,6 +18,7 @@ public class ProductDetailModel {
     private Long price;
     private Long offPrice;
     private Integer status;
+    private String previewImage;
     private List<String> imageUrls;
     private List<ProductQuantityModel> productQuantities;
 
@@ -27,6 +28,7 @@ public class ProductDetailModel {
         this.price = p.getPrice();
         this.offPrice = p.getOffPrice();
         this.status = p.getStatus();
+        this.previewImage = p.getImageUrl();
         this.imageUrls = new ArrayList<>();
         for (ProductImage image : p.getProductImages()) {
             this.imageUrls.add(image.getUrl());

@@ -249,10 +249,10 @@ public class ProductController {
 
     @GetMapping("/list")
     public CommonResponse<?> searchProduct(@RequestParam(value = "name", required = false) String name,
-                                           @RequestParam(value = "categoryIds", required = false) List<Long> categoryIds,
-                                           @RequestParam(value = "brandId", required = false) String brandId,
-                                           @RequestParam(value = "sizeId", required = false) String sizeId,
-                                           @RequestParam(value = "colorId", required = false) String colorId,
+                                           @RequestParam(value = "categories", required = false) List<String> categories,
+                                           @RequestParam(value = "brandNames", required = false) List<String> brandNames,
+                                           @RequestParam(value = "sizes", required = false) List<String> sizes,
+                                           @RequestParam(value = "colors", required = false) List<String> colors,
                                            @RequestParam(value = "sale", required = false) Boolean sale,
                                            @RequestParam(defaultValue = "1") int page,
                                            @RequestParam(defaultValue = "25") int size,
@@ -272,7 +272,7 @@ public class ProductController {
                 sort = Sort.unsorted().ascending();
             }
             pageable = PageRequest.of(page - 1, size, sort);
-            Page<ProductBasicModel> model = productService.searchProduct(name, categoryIds, brandId, sizeId, colorId, sale, pageable);
+            Page<ProductBasicModel> model = productService.searchProduct(name, categories, brandNames, sizes, colors, sale, pageable);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(model);
