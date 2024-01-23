@@ -10,4 +10,6 @@ public interface ColorService {
     void update(Color product);
 
     void delete(Color product);
+
+    Color getColorByEngName(String engName);
 }

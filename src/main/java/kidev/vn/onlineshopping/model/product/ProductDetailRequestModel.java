@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class ProductDetailRequestModel {
     private Long id;
-    private Long colorId;
     private String name;
     private Long price;
     private Long offPrice;

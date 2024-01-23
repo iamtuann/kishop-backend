@@ -63,7 +63,7 @@ public class ProductController {
     }
 
     @PostMapping("/save")
-    public CommonResponse<ProductResponse> savewProduct(@RequestBody ProductRequest request) {
+    public CommonResponse<ProductResponse> saveProduct(@RequestBody ProductRequest request) {
         CommonResponse<ProductResponse> response= new CommonResponse();
         try {
             Product product;
@@ -118,6 +118,10 @@ public class ProductController {
             Product product = productService.findOne(request.getProductId());
             List<ProductDetailResponse> output = new ArrayList<>();
             List<Color> colors = new ArrayList<>();
+            for (String colorName : request.getListColor()) {
+                Color color = colorService.getColorByEngName(colorName);
+                colors.add(color);
+            }
             for (ProductDetailRequestModel model : request.getModels()) {
                 ProductDetail pd;
                 if (model.getId() != null) {
@@ -126,9 +130,7 @@ public class ProductController {
                     pd = new ProductDetail();
                 }
                 pd.setProduct(product);
-                Color color = colorService.findOne(new Long(model.getColorId()));
-                pd.setColor(color);
-                colors.add(color);
+
                 pd.setName(model.getName());
                 pd.setStatus(model.getStatus());
                 pd.setPrice(new Long(model.getPrice()));
@@ -136,7 +138,7 @@ public class ProductController {
                     pd.setOffPrice(new Long(model.getOffPrice()));
                 }
                 pd = productDetailService.saveProductDetail(pd);
-                String fileNamePreview = (product.getSlug() + "-preview-" + pd.getName()).replaceAll(" ", "");
+                String fileNamePreview = (product.getSlug() + "-preview-" + model.getPreviewImage().getOriginalFilename()).replaceAll(" ", "");
                 String uploadDirPreview = storeFolder + fileNamePreview;
                 String imageUrl = storeUrl + fileNamePreview;
                 File destPreview = new File(uploadDirPreview);
@@ -147,7 +149,7 @@ public class ProductController {
                 List<ProductImage> productImages = new ArrayList<>();
                 if (model.getImages() != null) {
                     for (MultipartFile image : model.getImages()) {
-                        String fileName = (product.getSlug() + "-" + pd.getName() + "-" + image.getOriginalFilename()).replaceAll(" ", "");
+                        String fileName = (product.getSlug() + "-" + toSlug(pd.getName()) + "-" + image.getOriginalFilename()).replaceAll(" ", "");
                         String uploadDir = storeFolder + fileName;
                         String url = storeUrl + fileName;
                         File dest = new File(uploadDir);

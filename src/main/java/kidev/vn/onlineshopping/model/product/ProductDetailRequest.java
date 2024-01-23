@@ -8,5 +8,5 @@ import java.util.List;
 public class ProductDetailRequest {
     private Long productId;
     private List<ProductDetailRequestModel> models;
-    private List<String> colorName;
+    private List<String> listColor;
 }

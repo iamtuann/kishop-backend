@@ -24,10 +24,6 @@ public class ProductDetail {
     @Column(name = "name")
     private String name;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "color_id", referencedColumnName = "id")
-    private Color color;
-
     @Column(name = "price")
     private Long price;
 
