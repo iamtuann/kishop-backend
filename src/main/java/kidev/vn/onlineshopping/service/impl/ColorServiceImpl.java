@@ -6,6 +6,8 @@ import kidev.vn.onlineshopping.service.ColorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ColorServiceImpl implements ColorService {
     @Autowired
@@ -35,5 +37,10 @@ public class ColorServiceImpl implements ColorService {
     @Override
     public Color getColorByEngName(String engName) {
         return colorRepo.getColorByEngName(engName);
+    }
+
+    @Override
+    public List<Color> findAll() {
+        return colorRepo.findAll();
     }
 }
