@@ -31,4 +31,9 @@ public class ColorServiceImpl implements ColorService {
     public void delete(Color color) {
         colorRepo.delete(color);
     }
+
+    @Override
+    public Color getColorByEngName(String engName) {
+        return colorRepo.getColorByEngName(engName);
+    }
 }

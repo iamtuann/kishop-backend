@@ -63,7 +63,7 @@ public class ProductController {
     }
 
     @PostMapping("/save")
-    public CommonResponse<ProductResponse> savewProduct(@RequestBody ProductRequest request) {
+    public CommonResponse<ProductResponse> saveProduct(@RequestBody ProductRequest request) {
         CommonResponse<ProductResponse> response= new CommonResponse();
         try {
             Product product;
@@ -118,6 +118,10 @@ public class ProductController {
             Product product = productService.findOne(request.getProductId());
             List<ProductDetailResponse> output = new ArrayList<>();
             List<Color> colors = new ArrayList<>();
+            for (String colorName : request.getListColor()) {
+                Color color = colorService.getColorByEngName(colorName);
+                colors.add(color);
+            }
             for (ProductDetailRequestModel model : request.getModels()) {
                 ProductDetail pd;
                 if (model.getId() != null) {
@@ -126,27 +130,33 @@ public class ProductController {
                     pd = new ProductDetail();
                 }
                 pd.setProduct(product);
-                Color color = colorService.findOne(new Long(model.getColorId()));
-                pd.setColor(color);
-                colors.add(color);
+
+                pd.setName(model.getName());
                 pd.setStatus(model.getStatus());
                 pd.setPrice(new Long(model.getPrice()));
                 if (model.getOffPrice() != null) {
                     pd.setOffPrice(new Long(model.getOffPrice()));
                 }
                 pd = productDetailService.saveProductDetail(pd);
-                List<ProductImage> productImages = new ArrayList<>();
+                String fileNamePreview = (product.getSlug() + "-preview-" + model.getPreviewImage().getOriginalFilename()).replaceAll(" ", "");
+                String uploadDirPreview = storeFolder + fileNamePreview;
+                String imageUrl = storeUrl + fileNamePreview;
+                File destPreview = new File(uploadDirPreview);
+                model.getPreviewImage().transferTo(destPreview);
+                pd.setImageUrl(imageUrl);
+                pd.setImagePath(uploadDirPreview);
 
+                List<ProductImage> productImages = new ArrayList<>();
                 if (model.getImages() != null) {
                     for (MultipartFile image : model.getImages()) {
-                        String fileName = (product.getName() + "-" + pd.getColor().getName() + "-" + image.getOriginalFilename()).replaceAll(" ", "");
+                        String fileName = (product.getSlug() + "-" + toSlug(pd.getName()) + "-" + image.getOriginalFilename()).replaceAll(" ", "");
                         String uploadDir = storeFolder + fileName;
-                        String pathUrl = storeUrl + fileName;
+                        String url = storeUrl + fileName;
                         File dest = new File(uploadDir);
                         image.transferTo(dest);
                         ProductImage productImage = new ProductImage();
                         productImage.setProductDetail(pd);
-                        productImage.setUrl(pathUrl);
+                        productImage.setUrl(url);
                         productImage.setPathUrl(uploadDir);
                         productImages.add(productImage);
                     }
@@ -239,10 +249,10 @@ public class ProductController {
 
     @GetMapping("/list")
     public CommonResponse<?> searchProduct(@RequestParam(value = "name", required = false) String name,
-                                           @RequestParam(value = "categoryIds", required = false) List<Long> categoryIds,
-                                           @RequestParam(value = "brandId", required = false) String brandId,
-                                           @RequestParam(value = "sizeId", required = false) String sizeId,
-                                           @RequestParam(value = "colorId", required = false) String colorId,
+                                           @RequestParam(value = "categories", required = false) List<String> categories,
+                                           @RequestParam(value = "brandNames", required = false) List<String> brandNames,
+                                           @RequestParam(value = "sizes", required = false) List<String> sizes,
+                                           @RequestParam(value = "colors", required = false) List<String> colors,
                                            @RequestParam(value = "sale", required = false) Boolean sale,
                                            @RequestParam(defaultValue = "1") int page,
                                            @RequestParam(defaultValue = "25") int size,
@@ -262,7 +272,7 @@ public class ProductController {
                 sort = Sort.unsorted().ascending();
             }
             pageable = PageRequest.of(page - 1, size, sort);
-            Page<ProductBasicModel> model = productService.searchProduct(name, categoryIds, brandId, sizeId, colorId, sale, pageable);
+            Page<ProductBasicModel> model = productService.searchProduct(name, categories, brandNames, sizes, colors, sale, pageable);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(model);

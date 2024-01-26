@@ -14,19 +14,21 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductDetailModel {
     private Long id;
-    private Color color;
+    private String name;
     private Long price;
     private Long offPrice;
     private Integer status;
+    private String previewImage;
     private List<String> imageUrls;
     private List<ProductQuantityModel> productQuantities;
 
     public ProductDetailModel(ProductDetail p) {
         this.id = p.getId();
-        this.color = p.getColor();
+        this.name = p.getName();
         this.price = p.getPrice();
         this.offPrice = p.getOffPrice();
         this.status = p.getStatus();
+        this.previewImage = p.getImageUrl();
         this.imageUrls = new ArrayList<>();
         for (ProductImage image : p.getProductImages()) {
             this.imageUrls.add(image.getUrl());

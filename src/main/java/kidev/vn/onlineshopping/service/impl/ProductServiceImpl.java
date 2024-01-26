@@ -35,11 +35,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductBasicModel> searchProduct(String name,
-                                                 List<Long> categoryIds, String brandId,
-                                                 String sizeId, String colorId,
+                                                 List<String> categories, List<String> brandNames,
+                                                 List<String> sizes, List<String> colors,
                                                  Boolean sale, Pageable pageable) {
 
-        Page<Product> productPage = productRepo.searchProduct(name, categoryIds, brandId, sizeId, colorId, sale, pageable);
+        Page<Product> productPage = productRepo.searchProduct(name, categories, brandNames, sizes, colors, sale, pageable);
         List<ProductBasicModel> productBasicModels = new ArrayList<>();
         for (Product product : productPage) {
             ProductBasicModel model = new ProductBasicModel(product);
