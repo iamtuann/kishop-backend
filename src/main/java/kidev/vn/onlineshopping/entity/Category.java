@@ -23,6 +23,9 @@ public class Category {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "type")
+    private Integer type;
+
     @ManyToMany
     @JoinTable(name = "product_category",
             joinColumns = { @JoinColumn(name = "category_id") },
