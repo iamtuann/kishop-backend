@@ -27,7 +27,7 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
             " AND (coalesce(:brandNames, null) IS NULL OR p.brand.name IN (:brandNames))" +
             " AND (coalesce(:sizes, null) IS NULL OR s.name IN (:sizes))" +
             " AND (coalesce(:colors, null) IS NULL OR c.engName IN (:colors))" +
-            " AND (coalesce(:categories, null) IS NULL OR ct.name IN (:categories))" +
+            " AND (coalesce(:categories, null) IS NULL OR ct.slug IN (:categories))" +
             " AND (:sale IS NULL OR :sale = FALSE OR pd.offPrice IS NOT NULL) ")
     Page<Product>searchProduct(@Param(value = "name") String name,
                                @Param(value = "categories") List<String> categories,

@@ -1,5 +1,6 @@
 package kidev.vn.onlineshopping.controller;
 
+import com.github.slugify.Slugify;
 import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.entity.Category;
 import kidev.vn.onlineshopping.model.CommonResponse;
@@ -19,6 +20,8 @@ public class CategoryController {
 
     @Autowired
     private CategoryService categoryService;
+
+    final Slugify slg = new Slugify();
 
     @GetMapping("/all")
     public CommonResponse<List<CategoryModel>> getAllCategories() {
@@ -44,6 +47,7 @@ public class CategoryController {
         try {
             Category category = new Category();
             category.setName(request.getName());
+            category.setSlug(slg.slugify(request.getName()));
             category.setDescription(request.getDescription());
             category.setType(0);
             CategoryModel output = categoryService.saveCategory(category);
