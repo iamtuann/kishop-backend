@@ -28,8 +28,12 @@ public interface Constants {
     }
 
     public interface Gender {
-        public int MALE = 1;
-        public int FEMALE = 0;
+        public long MALE_ID = 1L;
+        public long FEMALE_ID = 2L;
+        public long UNISEX_ID = 3L;
+        public String MALE = "Nam";
+        public String FEMALE = "Nữ";
+        public String UNISEX = "Unisex";
     }
 
     public interface StatusProduct {
@@ -37,10 +41,5 @@ public interface Constants {
         public Integer SELLING = 1; // Đang bán
         public Integer STOPSELL = 2;    // Dừng bán
         public Integer STOPIMPORT = 3;  // Ngừng nhập
-    }
-
-    public interface CategoryType {
-        public Integer CATEGORY = 0;
-        public Integer GENDER = 1;
     }
 }

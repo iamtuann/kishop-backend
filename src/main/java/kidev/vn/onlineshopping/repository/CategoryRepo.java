@@ -10,9 +10,4 @@ import java.util.List;
 @Repository(value = "categoryRepo")
 public interface CategoryRepo extends JpaRepository<Category, Long> {
     Category getCategoryById(Long id);
-
-    @Override
-    @Query(value = "SELECT c FROM Category c " +
-            "WHERE c.type = 0")
-    List<Category> findAll();
 }

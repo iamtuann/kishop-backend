@@ -258,6 +258,7 @@ public class ProductController {
                                            @RequestParam(value = "brandNames", required = false) List<String> brandNames,
                                            @RequestParam(value = "sizes", required = false) List<String> sizes,
                                            @RequestParam(value = "colors", required = false) List<String> colors,
+                                           @RequestParam(value = "genders", required = false) List<String> genders,
                                            @RequestParam(value = "sale", required = false) Boolean sale,
                                            @RequestParam(defaultValue = "1") int page,
                                            @RequestParam(defaultValue = "25") int pageSize,
@@ -277,7 +278,7 @@ public class ProductController {
                 sort = Sort.unsorted().ascending();
             }
             pageable = PageRequest.of(page - 1, pageSize, sort);
-            Page<ProductBasicModel> model = productService.searchProduct(name, categories, brandNames, sizes, colors, sale, pageable);
+            Page<ProductBasicModel> model = productService.searchProduct(name, categories, brandNames, sizes, colors,genders, sale, pageable);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(model.getContent());

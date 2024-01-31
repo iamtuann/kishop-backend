@@ -15,7 +15,7 @@ public interface ProductService {
 
     Page<ProductBasicModel> searchProduct(String name,
                                           List<String> categories, List<String> brandNames,
-                                          List<String> sizes, List<String> colors,
+                                          List<String> sizes, List<String> colors, List<String> genders,
                                           Boolean sale, Pageable pageable);
 
     ProductModel getProductSellingtBySlug(String slug);
