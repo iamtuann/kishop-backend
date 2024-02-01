@@ -2,6 +2,8 @@ package kidev.vn.onlineshopping.service;
 
 import kidev.vn.onlineshopping.entity.Color;
 
+import java.util.List;
+
 public interface ColorService {
     Color findOne(Long id);
 
@@ -12,4 +14,6 @@ public interface ColorService {
     void delete(Color product);
 
     Color getColorByEngName(String engName);
+
+    List<Color> findAll();
 }

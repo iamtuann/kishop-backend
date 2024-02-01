@@ -1,5 +1,6 @@
 package kidev.vn.onlineshopping.controller;
 
+import com.github.slugify.Slugify;
 import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.entity.*;
 import kidev.vn.onlineshopping.model.CommonResponse;
@@ -52,13 +53,17 @@ public class ProductController {
     @Value("${store-url}")
     private String storeUrl;
 
+    final Slugify slg = new Slugify();
+
     private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
     private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
+    private static final Pattern EDGESDHASHES = Pattern.compile("(^-|-$)");
 
     public static String toSlug(String input) {
         String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
         String normalized = Normalizer.normalize(nowhitespace, Normalizer.Form.NFD);
         String slug = NONLATIN.matcher(normalized).replaceAll("");
+        slug = EDGESDHASHES.matcher(slug).replaceAll("");
         return slug.toLowerCase(Locale.ENGLISH);
     }
 
@@ -82,7 +87,7 @@ public class ProductController {
             }
             product.setUpdatedDate(new Date());
             product.setName(request.getName());
-            product.setSlug(toSlug(request.getName()));
+            product.setSlug(slg.slugify(request.getName()));
             product.setDescription(request.getDescription());
             product.setBrand(brandService.findOne(request.getBrandId()));
             List<Category> categories = new ArrayList<>();
@@ -253,12 +258,13 @@ public class ProductController {
                                            @RequestParam(value = "brandNames", required = false) List<String> brandNames,
                                            @RequestParam(value = "sizes", required = false) List<String> sizes,
                                            @RequestParam(value = "colors", required = false) List<String> colors,
+                                           @RequestParam(value = "genders", required = false) List<String> genders,
                                            @RequestParam(value = "sale", required = false) Boolean sale,
                                            @RequestParam(defaultValue = "1") int page,
-                                           @RequestParam(defaultValue = "25") int size,
+                                           @RequestParam(defaultValue = "25") int pageSize,
                                            @RequestParam(value = "key", required = false) String key,
                                            @RequestParam(value = "orderBy", required = false) String orderBy) {
-        CommonResponse<Page<ProductBasicModel>> response = new CommonResponse<>();
+        CommonResponse<List<ProductBasicModel>> response = new CommonResponse<>();
         try {
             Sort sort = null;
             Pageable pageable;
@@ -271,11 +277,11 @@ public class ProductController {
             } else {
                 sort = Sort.unsorted().ascending();
             }
-            pageable = PageRequest.of(page - 1, size, sort);
-            Page<ProductBasicModel> model = productService.searchProduct(name, categories, brandNames, sizes, colors, sale, pageable);
+            pageable = PageRequest.of(page - 1, pageSize, sort);
+            Page<ProductBasicModel> model = productService.searchProduct(name, categories, brandNames, sizes, colors,genders, sale, pageable);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setOutput(model);
+            response.setOutput(model.getContent());
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
             response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);

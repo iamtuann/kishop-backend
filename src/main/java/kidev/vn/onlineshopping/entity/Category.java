@@ -20,8 +20,14 @@ public class Category {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "slug")
+    private String slug;
+
     @Column(name = "description")
     private String description;
+
+    @Column(name = "type")
+    private Integer type;
 
     @ManyToMany
     @JoinTable(name = "product_category",

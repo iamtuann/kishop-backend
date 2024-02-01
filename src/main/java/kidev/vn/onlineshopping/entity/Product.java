@@ -64,6 +64,13 @@ public class Product {
     @Column(name = "updated_date")
     private Date updatedDate;
 
+    @ManyToMany
+    @JoinTable(
+            name = "product_gender",
+            joinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "gender_id", referencedColumnName = "id")})
+    private List<Gender> gender;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_detail_id", referencedColumnName = "id")
     private ProductDetail productPreview;
