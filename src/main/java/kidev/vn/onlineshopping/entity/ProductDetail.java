@@ -24,6 +24,10 @@ public class ProductDetail {
     @Column(name = "name")
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "color_id")
+    private Color color;
+
     @Column(name = "price")
     private Long price;
 
@@ -36,8 +40,8 @@ public class ProductDetail {
     @OneToMany(mappedBy = "productDetail",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProductQuantity> productQuantities;
 
-    @Column(name = "off_price")
-    private Long offPrice;
+    @Column(name = "old_price")
+    private Long oldPrice;
 
     @Column(name = "image_url")
     private String imageUrl;

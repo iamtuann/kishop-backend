@@ -8,7 +8,7 @@ public class ProductDetailRequestModel {
     private Long id;
     private String name;
     private Long price;
-    private Long offPrice;
+    private Long oldPrice;
     private Integer status;
     private MultipartFile[] images;
     private MultipartFile previewImage;

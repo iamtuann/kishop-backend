@@ -2,9 +2,11 @@ package kidev.vn.onlineshopping.service.impl;
 
 import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.entity.Product;
+import kidev.vn.onlineshopping.entity.ProductDetail;
 import kidev.vn.onlineshopping.model.product.ProductBasicModel;
 import kidev.vn.onlineshopping.model.product.ProductDetailModel;
 import kidev.vn.onlineshopping.model.product.ProductModel;
+import kidev.vn.onlineshopping.repository.ProductDetailRepo;
 import kidev.vn.onlineshopping.repository.ProductRepo;
 import kidev.vn.onlineshopping.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,8 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
     @Autowired
     ProductRepo productRepo;
+    @Autowired
+    ProductDetailRepo productDetailRepo;
 
 
     @Override
@@ -39,13 +44,21 @@ public class ProductServiceImpl implements ProductService {
                                                  List<String> sizes, List<String> colors, List<String> genders,
                                                  Boolean sale, Pageable pageable) {
 
-        Page<Product> productPage = productRepo.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
-        List<ProductBasicModel> productBasicModels = new ArrayList<>();
-        for (Product product : productPage) {
-            ProductBasicModel model = new ProductBasicModel(product);
-            productBasicModels.add(model);
+//        Page<Product> productPage = productRepo.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
+//        List<ProductBasicModel> productBasicModels = new ArrayList<>();
+//        for (Product product : productPage) {
+//            ProductBasicModel model = new ProductBasicModel(product);
+//            productBasicModels.add(model);
+//        }
+        Page<ProductDetail> productDetails = productDetailRepo.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
+        HashSet<ProductBasicModel> productBasicModelsSet = new HashSet<>();
+        for (ProductDetail pd : productDetails) {
+            System.out.println(new ProductBasicModel(pd));
+            ProductBasicModel model = new ProductBasicModel(pd);
+            productBasicModelsSet.add(model);
         }
-        PageImpl<ProductBasicModel> response = new PageImpl<>(productBasicModels, pageable, productPage.getTotalElements());
+        ArrayList<ProductBasicModel> productBasicModels = new ArrayList<>(productBasicModelsSet);
+        PageImpl<ProductBasicModel> response = new PageImpl<>(productBasicModels, pageable, productDetails.getTotalElements());
         return response;
     }
 

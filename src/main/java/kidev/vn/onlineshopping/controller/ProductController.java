@@ -139,8 +139,10 @@ public class ProductController {
                 pd.setName(model.getName());
                 pd.setStatus(model.getStatus());
                 pd.setPrice(new Long(model.getPrice()));
-                if (model.getOffPrice() != null) {
-                    pd.setOffPrice(new Long(model.getOffPrice()));
+                if (model.getOldPrice() != null) {
+                    pd.setOldPrice(new Long(model.getOldPrice()));
+                } else {
+                    pd.setOldPrice(model.getPrice());
                 }
                 pd = productDetailService.saveProductDetail(pd);
                 String fileNamePreview = (product.getSlug() + "-preview-" + model.getPreviewImage().getOriginalFilename()).replaceAll(" ", "");
