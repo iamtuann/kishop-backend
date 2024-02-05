@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ProductDetailModel {
     private Long id;
+    private String productName;
     private String name;
     private String color;
     private Long price;
@@ -25,6 +26,7 @@ public class ProductDetailModel {
 
     public ProductDetailModel(ProductDetail p) {
         this.id = p.getId();
+        this.productName = p.getProduct().getName();
         this.name = p.getName();
         this.color = p.getColor().getName();
         this.price = p.getPrice();

@@ -298,7 +298,7 @@ public class ProductController {
     public CommonResponse<?> getProductBySlug(@PathVariable("slug") String slug) {
         CommonResponse<ProductModel> response = new CommonResponse<>();
         try {
-            ProductModel productModel = productService.getProductSellingtBySlug(slug);
+            ProductModel productModel = productService.getProductSellingBySlug(slug);
             if (productModel != null) {
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);

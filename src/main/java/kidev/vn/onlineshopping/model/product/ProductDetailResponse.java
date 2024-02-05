@@ -8,6 +8,7 @@ public class ProductDetailResponse {
     private Long id;
     private String productName;
     private String name;
+    private String color;
     private Long price;
     private Long oldPrice;
 

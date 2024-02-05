@@ -1,10 +1,10 @@
 package kidev.vn.onlineshopping.service.impl;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.entity.Product;
 import kidev.vn.onlineshopping.entity.ProductDetail;
 import kidev.vn.onlineshopping.model.product.ProductBasicModel;
-import kidev.vn.onlineshopping.model.product.ProductDetailModel;
 import kidev.vn.onlineshopping.model.product.ProductModel;
 import kidev.vn.onlineshopping.repository.ProductDetailRepo;
 import kidev.vn.onlineshopping.repository.ProductRepo;
@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +37,19 @@ public class ProductServiceImpl implements ProductService {
         return productRepo.save(product);
     }
 
+    private Boolean isFiltering(List<String> categories, List<String> brandNames,
+                                List<String> sizes, List<String> colors,
+                                List<String> genders, Boolean sale) {
+        if (categories!=null && !categories.isEmpty() ||
+                brandNames!=null && !brandNames.isEmpty() ||
+                sizes!=null && !sizes.isEmpty() ||
+                colors!=null && !colors.isEmpty() ||
+                genders!=null && !genders.isEmpty() ||
+                sale!=null && sale == true
+        ) return true;
+        else return false;
+    }
+
     @Override
     public Page<ProductBasicModel> searchProduct(String name,
                                                  List<String> categories, List<String> brandNames,
@@ -50,20 +62,19 @@ public class ProductServiceImpl implements ProductService {
 //            ProductBasicModel model = new ProductBasicModel(product);
 //            productBasicModels.add(model);
 //        }
+        Boolean isFiltering = isFiltering(categories, brandNames, sizes, colors, genders, sale);
         Page<ProductDetail> productDetails = productDetailRepo.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
-        HashSet<ProductBasicModel> productBasicModelsSet = new HashSet<>();
+        ArrayList<ProductBasicModel> productBasicModels = new ArrayList<>();
         for (ProductDetail pd : productDetails) {
-            System.out.println(new ProductBasicModel(pd));
-            ProductBasicModel model = new ProductBasicModel(pd);
-            productBasicModelsSet.add(model);
+            ProductBasicModel model = new ProductBasicModel(pd, isFiltering);
+            productBasicModels.add(model);
         }
-        ArrayList<ProductBasicModel> productBasicModels = new ArrayList<>(productBasicModelsSet);
         PageImpl<ProductBasicModel> response = new PageImpl<>(productBasicModels, pageable, productDetails.getTotalElements());
         return response;
     }
 
     @Override
-    public ProductModel getProductSellingtBySlug(String slug) {
+    public ProductModel getProductSellingBySlug(String slug) {
         Product product = productRepo.getProductBySlugAndStatus(slug, Constants.StatusProduct.SELLING);
         if (product != null) {
             ProductModel productModel = new ProductModel(product);
