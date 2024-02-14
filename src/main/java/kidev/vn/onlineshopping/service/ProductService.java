@@ -18,7 +18,7 @@ public interface ProductService {
                                           List<String> sizes, List<String> colors, List<String> genders,
                                           Boolean sale, Pageable pageable);
 
-    ProductModel getProductSellingtBySlug(String slug);
+    ProductModel getProductSellingBySlug(String slug);
 
     List<ProductBasicModel> getTopProductByCreatedDate(Pageable pageable);
 

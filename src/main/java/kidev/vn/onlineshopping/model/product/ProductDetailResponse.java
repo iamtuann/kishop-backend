@@ -8,8 +8,9 @@ public class ProductDetailResponse {
     private Long id;
     private String productName;
     private String name;
+    private String color;
     private Long price;
-    private Long offPrice;
+    private Long oldPrice;
 
     private String thumbnail;
 
@@ -18,7 +19,7 @@ public class ProductDetailResponse {
         this.productName = productDetail.getProduct().getName();
         this.name = productDetail.getName();
         this.price = productDetail.getPrice();
-        this.offPrice = productDetail.getOffPrice();
+        this.oldPrice = productDetail.getOldPrice();
         this.thumbnail = productDetail.getProductImages().get(0).getUrl();
     }
 }

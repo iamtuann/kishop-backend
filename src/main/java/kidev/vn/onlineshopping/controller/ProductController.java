@@ -139,8 +139,10 @@ public class ProductController {
                 pd.setName(model.getName());
                 pd.setStatus(model.getStatus());
                 pd.setPrice(new Long(model.getPrice()));
-                if (model.getOffPrice() != null) {
-                    pd.setOffPrice(new Long(model.getOffPrice()));
+                if (model.getOldPrice() != null) {
+                    pd.setOldPrice(new Long(model.getOldPrice()));
+                } else {
+                    pd.setOldPrice(model.getPrice());
                 }
                 pd = productDetailService.saveProductDetail(pd);
                 String fileNamePreview = (product.getSlug() + "-preview-" + model.getPreviewImage().getOriginalFilename()).replaceAll(" ", "");
@@ -296,7 +298,7 @@ public class ProductController {
     public CommonResponse<?> getProductBySlug(@PathVariable("slug") String slug) {
         CommonResponse<ProductModel> response = new CommonResponse<>();
         try {
-            ProductModel productModel = productService.getProductSellingtBySlug(slug);
+            ProductModel productModel = productService.getProductSellingBySlug(slug);
             if (productModel != null) {
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
