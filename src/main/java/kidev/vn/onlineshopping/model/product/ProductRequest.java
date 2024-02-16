@@ -20,5 +20,5 @@ public class ProductRequest {
 
     private List<Long> sizeIds;
 
-    private Long productDetailId;
+    private Long productVariantId;
 }

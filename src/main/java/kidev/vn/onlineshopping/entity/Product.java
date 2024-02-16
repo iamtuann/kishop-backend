@@ -56,7 +56,7 @@ public class Product {
     private List<Color> colors;
 
     @OneToMany(mappedBy = "product",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    List<ProductDetail> productDetails;
+    List<ProductVariant> productVariants;
 
     @Column(name = "created_date")
     private Date createdDate;
@@ -72,6 +72,6 @@ public class Product {
     private List<Gender> gender;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "product_detail_id", referencedColumnName = "id")
-    private ProductDetail productPreview;
+    @JoinColumn(name = "product_variant_id", referencedColumnName = "id")
+    private ProductVariant productPreview;
 }

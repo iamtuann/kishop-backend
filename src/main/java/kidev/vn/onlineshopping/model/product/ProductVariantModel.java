@@ -1,9 +1,8 @@
 package kidev.vn.onlineshopping.model.product;
 
-import kidev.vn.onlineshopping.entity.Color;
-import kidev.vn.onlineshopping.entity.ProductDetail;
 import kidev.vn.onlineshopping.entity.ProductImage;
 import kidev.vn.onlineshopping.entity.ProductQuantity;
+import kidev.vn.onlineshopping.entity.ProductVariant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,7 +11,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class ProductDetailModel {
+public class ProductVariantModel {
     private Long id;
     private String productName;
     private String name;
@@ -24,7 +23,7 @@ public class ProductDetailModel {
     private List<String> imageUrls;
     private List<ProductQuantityModel> productQuantities;
 
-    public ProductDetailModel(ProductDetail p) {
+    public ProductVariantModel(ProductVariant p) {
         this.id = p.getId();
         this.productName = p.getProduct().getName();
         this.name = p.getName();

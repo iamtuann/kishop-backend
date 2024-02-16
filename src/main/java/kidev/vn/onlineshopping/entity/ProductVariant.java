@@ -11,8 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "product_detail")
-public class ProductDetail {
+@Table(name = "product_variant")
+public class ProductVariant {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,10 +34,10 @@ public class ProductDetail {
     @Column(name = "status")
     private Integer status;
 
-    @OneToMany(mappedBy = "productDetail",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "productVariant",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProductImage> productImages;
 
-    @OneToMany(mappedBy = "productDetail",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "productVariant",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProductQuantity> productQuantities;
 
     @Column(name = "old_price")
