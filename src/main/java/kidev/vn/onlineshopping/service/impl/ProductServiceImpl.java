@@ -1,13 +1,12 @@
 package kidev.vn.onlineshopping.service.impl;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.entity.Product;
-import kidev.vn.onlineshopping.entity.ProductDetail;
+import kidev.vn.onlineshopping.entity.ProductVariant;
 import kidev.vn.onlineshopping.model.product.ProductBasicModel;
 import kidev.vn.onlineshopping.model.product.ProductModel;
-import kidev.vn.onlineshopping.repository.ProductDetailRepo;
 import kidev.vn.onlineshopping.repository.ProductRepo;
+import kidev.vn.onlineshopping.repository.ProductVariantRepo;
 import kidev.vn.onlineshopping.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,14 +16,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
     @Autowired
     ProductRepo productRepo;
     @Autowired
-    ProductDetailRepo productDetailRepo;
+    ProductVariantRepo productVariantRepo;
 
 
     @Override
@@ -63,13 +61,13 @@ public class ProductServiceImpl implements ProductService {
 //            productBasicModels.add(model);
 //        }
         Boolean isFiltering = isFiltering(categories, brandNames, sizes, colors, genders, sale);
-        Page<ProductDetail> productDetails = productDetailRepo.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
+        Page<ProductVariant> productVariants = productVariantRepo.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
         ArrayList<ProductBasicModel> productBasicModels = new ArrayList<>();
-        for (ProductDetail pd : productDetails) {
-            ProductBasicModel model = new ProductBasicModel(pd, isFiltering);
+        for (ProductVariant pv : productVariants) {
+            ProductBasicModel model = new ProductBasicModel(pv, isFiltering);
             productBasicModels.add(model);
         }
-        PageImpl<ProductBasicModel> response = new PageImpl<>(productBasicModels, pageable, productDetails.getTotalElements());
+        PageImpl<ProductBasicModel> response = new PageImpl<>(productBasicModels, pageable, productVariants.getTotalElements());
         return response;
     }
 

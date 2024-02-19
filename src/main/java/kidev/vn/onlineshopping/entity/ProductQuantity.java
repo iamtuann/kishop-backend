@@ -17,8 +17,8 @@ public class ProductQuantity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_detail_id")
-    private ProductDetail productDetail;
+    @JoinColumn(name = "product_variant_id")
+    private ProductVariant productVariant;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "size_id", referencedColumnName = "id")

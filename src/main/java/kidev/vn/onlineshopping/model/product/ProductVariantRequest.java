@@ -5,8 +5,8 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ProductDetailRequest {
+public class ProductVariantRequest {
     private Long productId;
-    private List<ProductDetailRequestModel> models;
+    private List<ProductVariantRequestModel> models;
     private List<String> listColor;
 }
