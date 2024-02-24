@@ -2,7 +2,13 @@ package kidev.vn.onlineshopping.model.productOrder;
 
 import kidev.vn.onlineshopping.entity.Product;
 import kidev.vn.onlineshopping.entity.ProductQuantity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProductOrderModel {
     private Long productId;
     private Long variantId;

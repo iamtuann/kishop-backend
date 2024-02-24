@@ -5,6 +5,7 @@ import kidev.vn.onlineshopping.entity.ProductQuantity;
 import kidev.vn.onlineshopping.model.CommonResponse;
 import kidev.vn.onlineshopping.model.productOrder.ProductOrderModel;
 import kidev.vn.onlineshopping.model.productOrder.ProductOrderRequest;
+import kidev.vn.onlineshopping.model.productOrder.ProductOrderResponseV1;
 import kidev.vn.onlineshopping.service.ProductQuantityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,25 @@ public class ProductOrderController {
             response.setOutput(null);
             response.setError("Có lỗi xảy ra");
             logger.error("Get products order info", e);
+        }
+        return response;
+    }
+
+    @GetMapping("/products-info/v1")
+    public CommonResponse<ProductOrderResponseV1> calculateProductOrderPrice(@RequestBody ProductOrderRequest request) {
+        CommonResponse<ProductOrderResponseV1> response = new CommonResponse<>();
+        try {
+            ProductQuantity pq = productQuantityService.findOne(request.getProductQtyId());
+            ProductOrderResponseV1 output = new ProductOrderResponseV1(pq, request.getQuantity());
+            response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+            response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
+            response.setOutput(output);
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            response.setOutput(null);
+            response.setError("Có lỗi xảy ra");
+            logger.error("calculate Product Order Price", e);
         }
         return response;
     }
