@@ -21,7 +21,7 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
     @Query(value = "SELECT DISTINCT p FROM Product p" +
             " JOIN p.sizes s" +
             " JOIN p.colors c" +
-            " JOIN p.productDetails pd" +
+            " JOIN p.productVariants pv" +
             " JOIN p.categories ct" +
             " JOIN p.gender g" +
             " Where (:name IS NULL OR :name = '' OR p.name LIKE CONCAT('%', :name, '%'))" +
@@ -30,7 +30,7 @@ public interface ProductRepo extends JpaRepository<Product, Long> {
             " AND (coalesce(:colors, null) IS NULL OR c.engName IN (:colors))" +
             " AND (coalesce(:categories, null) IS NULL OR ct.slug IN (:categories))" +
             " AND (coalesce(:genders, null) IS NULL OR g.name IN (:genders))" +
-            " AND (:sale IS NULL OR :sale = FALSE OR pd.oldPrice IS NOT NULL) ")
+            " AND (:sale IS NULL OR :sale = FALSE OR pv.oldPrice IS NOT NULL) ")
     Page<Product>searchProduct(@Param(value = "name") String name,
                                @Param(value = "categories") List<String> categories,
                                @Param(value = "brandNames") List<String> brandNames,

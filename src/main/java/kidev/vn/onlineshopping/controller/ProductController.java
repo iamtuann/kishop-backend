@@ -34,7 +34,7 @@ public class ProductController {
     @Autowired
     ProductService productService;
     @Autowired
-    ProductDetailService productDetailService;
+    ProductVariantService productVariantService;
     @Autowired
     ProductQuantityService productQuantityService;
     @Autowired
@@ -79,8 +79,8 @@ public class ProductController {
                 product.setStatus(Constants.StatusProduct.NOTSELL);
                 product.setCreatedDate(new Date());
             }
-            if (request.getProductDetailId() != null) {
-                product.setProductPreview(productDetailService.findOne(request.getProductDetailId()));
+            if (request.getProductVariantId() != null) {
+                product.setProductPreview(productVariantService.findOne(request.getProductVariantId()));
             }
             if (request.getStatus() != null) {
                 product.setStatus(request.getStatus());
@@ -116,62 +116,62 @@ public class ProductController {
         return response;
     }
 
-    @PostMapping(value = "/save-detail", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CommonResponse<List<ProductDetailResponse>> saveProductDetail(@ModelAttribute ProductDetailRequest request) {
-        CommonResponse<List<ProductDetailResponse>> response= new CommonResponse<>();
+    @PostMapping(value = "/save-variant", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public CommonResponse<List<ProductVariantResponse>> saveProductVariant(@ModelAttribute ProductVariantRequest request) {
+        CommonResponse<List<ProductVariantResponse>> response= new CommonResponse<>();
         try {
             Product product = productService.findOne(request.getProductId());
-            List<ProductDetailResponse> output = new ArrayList<>();
+            List<ProductVariantResponse> output = new ArrayList<>();
             List<Color> colors = new ArrayList<>();
             for (String colorName : request.getListColor()) {
                 Color color = colorService.getColorByEngName(colorName);
                 colors.add(color);
             }
-            for (ProductDetailRequestModel model : request.getModels()) {
-                ProductDetail pd;
+            for (ProductVariantRequestModel model : request.getModels()) {
+                ProductVariant pv;
                 if (model.getId() != null) {
-                    pd = productDetailService.findOne(new Long(model.getId()));
+                    pv = productVariantService.findOne(new Long(model.getId()));
                 } else {
-                    pd = new ProductDetail();
+                    pv = new ProductVariant();
                 }
-                pd.setProduct(product);
+                pv.setProduct(product);
 
-                pd.setName(model.getName());
-                pd.setStatus(model.getStatus());
-                pd.setPrice(new Long(model.getPrice()));
+                pv.setName(model.getName());
+                pv.setStatus(model.getStatus());
+                pv.setPrice(new Long(model.getPrice()));
                 if (model.getOldPrice() != null) {
-                    pd.setOldPrice(new Long(model.getOldPrice()));
+                    pv.setOldPrice(new Long(model.getOldPrice()));
                 } else {
-                    pd.setOldPrice(model.getPrice());
+                    pv.setOldPrice(model.getPrice());
                 }
-                pd = productDetailService.saveProductDetail(pd);
+                pv = productVariantService.saveProductVariant(pv);
                 String fileNamePreview = (product.getSlug() + "-preview-" + model.getPreviewImage().getOriginalFilename()).replaceAll(" ", "");
                 String uploadDirPreview = storeFolder + fileNamePreview;
                 String imageUrl = storeUrl + fileNamePreview;
                 File destPreview = new File(uploadDirPreview);
                 model.getPreviewImage().transferTo(destPreview);
-                pd.setImageUrl(imageUrl);
-                pd.setImagePath(uploadDirPreview);
+                pv.setImageUrl(imageUrl);
+                pv.setImagePath(uploadDirPreview);
 
                 List<ProductImage> productImages = new ArrayList<>();
                 if (model.getImages() != null) {
                     for (MultipartFile image : model.getImages()) {
-                        String fileName = (product.getSlug() + "-" + toSlug(pd.getName()) + "-" + image.getOriginalFilename()).replaceAll(" ", "");
+                        String fileName = (product.getSlug() + "-" + toSlug(pv.getName()) + "-" + image.getOriginalFilename()).replaceAll(" ", "");
                         String uploadDir = storeFolder + fileName;
                         String url = storeUrl + fileName;
                         File dest = new File(uploadDir);
                         image.transferTo(dest);
                         ProductImage productImage = new ProductImage();
-                        productImage.setProductDetail(pd);
+                        productImage.setProductVariant(pv);
                         productImage.setUrl(url);
                         productImage.setPathUrl(uploadDir);
                         productImages.add(productImage);
                     }
                 }
                 productImages = productImageService.saveAll(productImages);
-                pd.setProductImages(productImages);
-                pd = productDetailService.saveProductDetail(pd);
-                output.add(new ProductDetailResponse(pd));
+                pv.setProductImages(productImages);
+                pv = productVariantService.saveProductVariant(pv);
+                output.add(new ProductVariantResponse(pv));
             }
             product.setColors(colors);
             productService.update(product);
@@ -179,7 +179,7 @@ public class ProductController {
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(output);
         } catch (Exception e) {
-            logger.error("save product detail", e);
+            logger.error("save product variant", e);
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
             response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
             response.setOutput(null);
@@ -193,14 +193,14 @@ public class ProductController {
         CommonResponse<?> response = new CommonResponse<>();
         try {
             for (ProductQuantityRequest detail : request) {
-                ProductDetail pd = productDetailService.findOne(detail.getProductDetailId());
+                ProductVariant pv = productVariantService.findOne(detail.getProductVariantId());
                 for (ProductQuantityRequestModel model : detail.getModels()) {
                     ProductQuantity productQuantity;
                     if (model.getId() != null) {
                         productQuantity = productQuantityService.findOne(model.getId());
                     } else {
                         productQuantity = new ProductQuantity();
-                        productQuantity.setProductDetail(pd);
+                        productQuantity.setProductVariant(pv);
                     }
                     productQuantity.setSize(sizeService.findOne(model.getSizeId()));
                     productQuantity.setQuantity(model.getQuantity());
@@ -223,24 +223,24 @@ public class ProductController {
     @PostMapping("create")
     public CommonResponse<?> createProduct(@RequestParam("productId") Long productId,
                                            @RequestParam("status") Integer status,
-                                           @RequestParam(value = "productDetailId", required = false) Long detailId) {
+                                           @RequestParam(value = "productVariantId", required = false) Long variantId) {
         CommonResponse<?> response = new CommonResponse<>();
         try {
             Product product = productService.findOne(productId);
             product.setStatus(status);
-            ProductDetail productDetail = productDetailService.findOne(detailId);
-            if (detailId == null) {
-                product.setProductPreview(product.getProductDetails().get(0));
+            ProductVariant productVariant = productVariantService.findOne(variantId);
+            if (variantId == null) {
+                product.setProductPreview(product.getProductVariants().get(0));
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
-            } else if (productDetail.getProduct().getId() == productId) {
-                product.setProductPreview(productDetail);
+            } else if (productVariant.getProduct().getId() == productId) {
+                product.setProductPreview(productVariant);
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
             } else {
                 response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
                 response.setMessage(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
-                response.setError("ProductDetail không thuộc product");
+                response.setError("ProductVariant không thuộc product");
             }
             productService.update(product);
             response.setOutput(null);
@@ -315,7 +315,7 @@ public class ProductController {
             response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
             response.setOutput(null);
             response.setError("Có lỗi xảy ra");
-            logger.error("Get product detail", e);
+            logger.error("Get product variant", e);
         }
         return response;
     }

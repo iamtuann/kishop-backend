@@ -6,6 +6,6 @@ import java.util.List;
 
 @Data
 public class ProductQuantityRequest {
-    private Long productDetailId;
+    private Long productVariantId;
     private List<ProductQuantityRequestModel> models;
 }
