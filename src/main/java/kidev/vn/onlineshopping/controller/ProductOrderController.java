@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,16 +24,16 @@ public class ProductOrderController {
     @Autowired
     ProductQuantityService productQuantityService;
 
-    @GetMapping("/products-info")
+    @PostMapping("/products-info")
     public CommonResponse<List<ProductOrderModel>> getProductsInfo(@RequestBody List<ProductOrderRequest> requests) {
         CommonResponse<List<ProductOrderModel>> response = new CommonResponse<>();
         try {
             List<ProductOrderModel> listOrder = new ArrayList<>();
             if (requests.size() > 0) {
                 for (ProductOrderRequest request : requests) {
-                    ProductQuantity pq = productQuantityService.findOne(request.getProductQtyId());
+                    ProductQuantity pq = productQuantityService.findOne(request.getQuantityId());
                     if (pq != null) {
-                        listOrder.add(new ProductOrderModel(pq, request.getQuantity()));
+                        listOrder.add(new ProductOrderModel(pq, request.getQuantityOrder()));
                     }
                 }
             }
@@ -53,12 +50,12 @@ public class ProductOrderController {
         return response;
     }
 
-    @GetMapping("/products-info/v1")
+    @PostMapping("/products-info/v1")
     public CommonResponse<ProductOrderResponseV1> calculateProductOrderPrice(@RequestBody ProductOrderRequest request) {
         CommonResponse<ProductOrderResponseV1> response = new CommonResponse<>();
         try {
-            ProductQuantity pq = productQuantityService.findOne(request.getProductQtyId());
-            ProductOrderResponseV1 output = new ProductOrderResponseV1(pq, request.getQuantity());
+            ProductQuantity pq = productQuantityService.findOne(request.getQuantityId());
+            ProductOrderResponseV1 output = new ProductOrderResponseV1(pq, request.getQuantityOrder());
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(output);

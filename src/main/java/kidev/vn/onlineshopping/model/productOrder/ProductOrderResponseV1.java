@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class ProductOrderResponseV1 {
-    private Long productQtyId;
+    private Long quantityId;
     private Long totalPrice;
     private Long totalOldPrice;
     private Integer quantityOrder;
 
     public ProductOrderResponseV1(ProductQuantity productQuantity, Integer quantity) {
-        this.productQtyId = productQuantity.getId();
+        this.quantityId = productQuantity.getId();
         this.quantityOrder = quantity;
         this.totalPrice = productQuantity.getProductVariant().getPrice() * this.quantityOrder;
         this.totalOldPrice = productQuantity.getProductVariant().getOldPrice() * this.quantityOrder;
