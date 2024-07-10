@@ -20,10 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @RestController
@@ -69,7 +66,7 @@ public class ProductController {
 
     @PostMapping("/save")
     public CommonResponse<ProductResponse> saveProduct(@RequestBody ProductRequest request) {
-        CommonResponse<ProductResponse> response= new CommonResponse();
+        CommonResponse<ProductResponse> response= new CommonResponse<>();
         try {
             Product product;
             if (request.getId() != null) {
@@ -130,7 +127,7 @@ public class ProductController {
             for (ProductVariantRequestModel model : request.getModels()) {
                 ProductVariant pv;
                 if (model.getId() != null) {
-                    pv = productVariantService.findOne(new Long(model.getId()));
+                    pv = productVariantService.findOne(model.getId());
                 } else {
                     pv = new ProductVariant();
                 }
@@ -138,9 +135,9 @@ public class ProductController {
 
                 pv.setName(model.getName());
                 pv.setStatus(model.getStatus());
-                pv.setPrice(new Long(model.getPrice()));
+                pv.setPrice(model.getPrice());
                 if (model.getOldPrice() != null) {
-                    pv.setOldPrice(new Long(model.getOldPrice()));
+                    pv.setOldPrice(model.getOldPrice());
                 } else {
                     pv.setOldPrice(model.getPrice());
                 }
@@ -233,7 +230,7 @@ public class ProductController {
                 product.setProductPreview(product.getProductVariants().get(0));
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
-            } else if (productVariant.getProduct().getId() == productId) {
+            } else if (Objects.equals(productVariant.getProduct().getId(), productId)) {
                 product.setProductPreview(productVariant);
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
@@ -268,7 +265,7 @@ public class ProductController {
                                            @RequestParam(value = "orderBy", required = false) String orderBy) {
         CommonResponse<List<ProductBasicModel>> response = new CommonResponse<>();
         try {
-            Sort sort = null;
+            Sort sort;
             Pageable pageable;
             if (key != null && !key.isEmpty()) {
                 if (orderBy.equals("asc")) {

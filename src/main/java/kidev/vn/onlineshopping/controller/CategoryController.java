@@ -23,7 +23,7 @@ public class CategoryController {
 
     final Slugify slg = new Slugify();
 
-    @GetMapping("/all")
+    @GetMapping
     public CommonResponse<List<CategoryModel>> getAllCategories() {
         CommonResponse<List<CategoryModel>> response = new CommonResponse<>();
         try {
@@ -41,7 +41,7 @@ public class CategoryController {
         return response;
     }
 
-    @PostMapping("/create")
+    @PostMapping
     public CommonResponse<CategoryModel> createCategory(@RequestBody CategoryModel request) {
         CommonResponse<CategoryModel> response = new CommonResponse<>();
         try {

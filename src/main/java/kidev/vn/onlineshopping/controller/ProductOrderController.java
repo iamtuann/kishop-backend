@@ -50,7 +50,7 @@ public class ProductOrderController {
         return response;
     }
 
-    @PostMapping("/products-info/v1")
+    @PostMapping("/update-quantity")
     public CommonResponse<ProductOrderResponseV1> calculateProductOrderPrice(@RequestBody ProductOrderRequest request) {
         CommonResponse<ProductOrderResponseV1> response = new CommonResponse<>();
         try {

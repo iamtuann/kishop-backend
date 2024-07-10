@@ -19,46 +19,4 @@ import java.util.List;
 @RequestMapping("api")
 public class CommonController {
     public static Logger logger = LoggerFactory.getLogger(CommonController.class);
-
-    @Autowired
-    private BrandService brandService;
-
-    @Autowired
-    private ColorService colorService;
-
-    @GetMapping("/brands/all")
-    public CommonResponse<List<BrandModel>> getAllBrands() {
-        CommonResponse<List<BrandModel>> response = new CommonResponse<>();
-        try {
-            List<BrandModel> brands = brandService.findAll();
-            response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-            response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setOutput(brands);
-        } catch (Exception e) {
-            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
-            response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
-            response.setOutput(null);
-            response.setError("Có lỗi xảy ra");
-            logger.error("getAllBrands", e);
-        }
-        return response;
-    }
-
-    @GetMapping("/colors/all")
-    public CommonResponse<List<Color>> getAllColors() {
-        CommonResponse<List<Color>> response = new CommonResponse<>();
-        try {
-            List<Color> colors = colorService.findAll();
-            response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-            response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setOutput(colors);
-        } catch (Exception e) {
-            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
-            response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
-            response.setOutput(null);
-            response.setError("Có lỗi xảy ra");
-            logger.error("getAllBrands", e);
-        }
-        return response;
-    }
 }
