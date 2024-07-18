@@ -42,4 +42,9 @@ public interface Constants {
         public Integer STOPSELL = 2;    // Dừng bán
         public Integer STOPIMPORT = 3;  // Ngừng nhập
     }
+
+    public interface AuthUserStatus {
+        public Integer NOT_VERIFY = 0;
+        public Integer VERIFIED = 1;
+    }
 }

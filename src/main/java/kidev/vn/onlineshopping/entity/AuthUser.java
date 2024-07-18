@@ -1,5 +1,6 @@
 package kidev.vn.onlineshopping.entity;
 
+import kidev.vn.onlineshopping.model.authUser.AuthUserRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,14 +29,8 @@ public class AuthUser {
     @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "middle_name")
-    private String middleName;
-
     @Column(name = "last_name")
     private String lastName;
-
-    @Column(name = "full_name")
-    private String fullName;
 
     @Column(name = "email")
     private String email;
