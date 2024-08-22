@@ -1,6 +1,6 @@
 package kidev.vn.onlineshopping.model.productOrder;
 
-import kidev.vn.onlineshopping.entity.ProductQuantity;
+import kidev.vn.onlineshopping.entity.ProductDetail;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,10 +12,10 @@ public class ProductOrderResponseV1 {
     private Long totalOldPrice;
     private Integer quantityOrder;
 
-    public ProductOrderResponseV1(ProductQuantity productQuantity, Integer quantity) {
-        this.quantityId = productQuantity.getId();
+    public ProductOrderResponseV1(ProductDetail productDetail, Integer quantity) {
+        this.quantityId = productDetail.getId();
         this.quantityOrder = quantity;
-        this.totalPrice = productQuantity.getProductVariant().getPrice() * this.quantityOrder;
-        this.totalOldPrice = productQuantity.getProductVariant().getOldPrice() * this.quantityOrder;
+        this.totalPrice = productDetail.getProductVariant().getPrice() * this.quantityOrder;
+        this.totalOldPrice = productDetail.getProductVariant().getOldPrice() * this.quantityOrder;
     }
 }

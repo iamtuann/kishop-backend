@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ProductQuantityRequest {
+public class ProductDetailRequest {
     private Long productVariantId;
-    private List<ProductQuantityRequestModel> models;
+    private List<ProductDetailRequestModel> models;
 }
