@@ -94,16 +94,7 @@ public class AuthController {
                 UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
                 String jwtCookie = jwtUtils.generateJwtToken(userDetails);
-
-                List<String> roles = userDetails.getAuthorities().stream()
-                        .map(item -> item.getAuthority())
-                        .collect(Collectors.toList());
-
-
-                AuthUserResponse userInfo = new AuthUserResponse(userDetails.getId(),
-                        userDetails.getUsername(),
-                        jwtCookie,
-                        roles);
+                AuthUserResponse userInfo = new AuthUserResponse(userDetails, jwtCookie);
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
                 response.setOutput(userInfo);
