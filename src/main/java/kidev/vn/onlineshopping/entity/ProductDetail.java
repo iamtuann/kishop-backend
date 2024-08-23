@@ -29,4 +29,12 @@ public class ProductDetail {
 
     @Column(name = "sold")
     private Integer sold;
+
+    public Long getPrice() {
+        return productVariant.getPrice();
+    }
+
+    public Long getOldPrice() {
+        return productVariant.getOldPrice();
+    }
 }

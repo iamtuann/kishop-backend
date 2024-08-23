@@ -1,13 +1,15 @@
 package kidev.vn.onlineshopping.service;
 
 import kidev.vn.onlineshopping.entity.CartItem;
+import kidev.vn.onlineshopping.model.cart.CartItemBasic;
+import kidev.vn.onlineshopping.model.cart.CartItemRequest;
 
 public interface CartItemService {
     CartItem findOne(Long id);
 
-    void create(CartItem cartItem);
+    CartItem create(CartItemRequest item, Long userId);
 
-    void update(CartItem cartItem);
+    CartItem update(CartItemRequest item);
 
     void delete(CartItem cartItem);
 }

@@ -37,7 +37,7 @@ public interface ProductVariantRepo extends JpaRepository<ProductVariant, Long> 
 //                                Boolean sale, Pageable pageable);
 
     @Query(value = "select pv.* from ( " +
-            "select DISTINCT pv.*, p.created_date as createdDate, pq.sold as sold, " +
+            "select DISTINCT pv.*, p.created_date as createdDate, pd.sold as sold, " +
             "ROW_NUMBER() OVER (PARTITION BY pv.product_id ORDER BY pv.id) as row_num " +
             "from product_variant pv " +
             "inner join color c on pv.color_id = c.id " +
@@ -49,7 +49,7 @@ public interface ProductVariantRepo extends JpaRepository<ProductVariant, Long> 
             "inner join gender g on g.id = pg.gender_id " +
             "inner join product_size ps on ps.product_id = p.id " +
             "inner join size s on s.id = ps.size_id " +
-            "inner join product_quantity pq on pv.id = pq.product_variant_id " +
+            "inner join product_detail pd on pv.id = pd.product_variant_id " +
             "WHERE (:name IS NULL OR :name = '' OR p.name LIKE CONCAT('%', :name, '%')) " +
             "AND (coalesce(:brandNames, null) IS NULL OR b.name IN (:brandNames)) " +
             "AND (coalesce(:sizes, null) IS NULL OR s.name IN (:sizes)) " +
