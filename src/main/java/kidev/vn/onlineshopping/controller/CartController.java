@@ -15,10 +15,12 @@ import lombok.AllArgsConstructor;
 import netscape.security.Principal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +69,7 @@ public class CartController {
     }
 
     @GetMapping("/items")
-    public CommonResponse<List<CartItemDetail>> getCartItems(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<CommonResponse<?>> getCartItems(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         CommonResponse<List<CartItemDetail>> response = new CommonResponse<>();
         try {
             List<CartItemDetail> cartItemDetails = cartService.getAllCartItemsByUserId(userDetails.getId());
@@ -82,20 +84,20 @@ public class CartController {
             response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
             logger.error("Get products order info", e);
         }
-        return response;
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/update-item")
-    public CommonResponse<CartItemBasic> calculateProductOrderPrice(@RequestBody CartItemRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<CommonResponse<CartItemBasic>> calculateProductOrderPrice(@RequestBody CartItemRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         CommonResponse<CartItemBasic> response = new CommonResponse<>();
         try {
             ProductDetail pd = productDetailService.findOne(request.getDetailId());
             if (pd == null) {
-                response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+                response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
                 response.setMessage("Product Detail not exist");
                 response.setOutput(null);
-                response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
-                return response;
+                response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
+                return ResponseEntity.ok(response);
             }
             CartItemBasic output = null;
             if (userDetails == null) {
@@ -103,19 +105,29 @@ public class CartController {
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
                 response.setOutput(output);
-                return response;
+                return ResponseEntity.ok(response);
             }
             CartItem cartItem;
             if (request.getId() == null) {
                 cartItem = cartItemService.create(request, userDetails.getId());
             } else {
-                cartItem = cartItemService.update(request);
+                cartItem = cartItemService.update(request, userDetails.getId());
             }
-            output = new CartItemBasic(cartItem);
-
+            if (cartItem == null) {
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setMessage("Delete CartItem successful");
+            } else {
+                output = new CartItemBasic(cartItem);
+            }
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(output);
+        } catch (IllegalArgumentException e) {
+            response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
+            response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
+            response.setOutput(null);
+            response.setMessage(e.getMessage());
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
             response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
@@ -123,6 +135,6 @@ public class CartController {
             response.setMessage("System error");
             logger.error("update cart item", e);
         }
-        return response;
+        return ResponseEntity.ok(response);
     }
 }

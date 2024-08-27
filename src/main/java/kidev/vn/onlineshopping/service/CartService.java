@@ -1,7 +1,6 @@
 package kidev.vn.onlineshopping.service;
 
 import kidev.vn.onlineshopping.entity.Cart;
-import kidev.vn.onlineshopping.entity.CartItem;
 import kidev.vn.onlineshopping.model.cart.CartItemDetail;
 
 import java.util.List;

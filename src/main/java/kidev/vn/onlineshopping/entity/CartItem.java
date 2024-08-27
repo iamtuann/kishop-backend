@@ -25,7 +25,6 @@ public class CartItem {
     private ProductDetail productDetail;
 
     @Column(name = "quantity")
-    @Min(value = 1, message = "Quantity cannot be less than 0")
     private Integer quantity;
 
     @Column(name = "created_date")
@@ -33,6 +32,14 @@ public class CartItem {
 
     @Column(name = "updated_date")
     private Date updatedDate;
+
+    public void setQuantity(Integer quantity) {
+        if (quantity == null || quantity <= 0) {
+            throw new IllegalArgumentException("Quantity cannot be less than 0");
+        } else {
+            this.quantity = quantity;
+        }
+    }
 
     public Long getPrice() {
         return productDetail.getPrice();
