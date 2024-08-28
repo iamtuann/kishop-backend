@@ -44,19 +44,20 @@ public class CartItemServiceImpl implements CartItemService {
     public CartItem update(CartItemRequest item,  Long userId) {
         Cart cart = cartService.getCartByUserId(userId);
         CartItem cartItem = cartItemRepo.getCartItemByCartIdAndProductDetailId(cart.getId(), item.getDetailId());
+        // create cart item if not exist
         if (cartItem == null) {
-            throw new IllegalArgumentException("ProductDetail is not in cart");
+            cartItem = this.create(item, userId);
+            return cartItem;
         }
-        if (item.getQuantity() < 0) {
-            throw new IllegalArgumentException("Cart item quantity can not less than 0");
-        }
-        if (item.getDetailId() == 0) {
+        // delete cart item
+        if (item.getQuantity() == null || item.getQuantity() <= 0) {
             this.delete(cartItem);
             return null;
+        } else {
+            cartItem.setQuantity(item.getQuantity());
+            cartItem.setUpdatedDate(new Date());
+            return cartItemRepo.save(cartItem);
         }
-        cartItem.setQuantity(item.getQuantity());
-        cartItem.setUpdatedDate(new Date());
-        return cartItemRepo.save(cartItem);
     }
 
     @Override

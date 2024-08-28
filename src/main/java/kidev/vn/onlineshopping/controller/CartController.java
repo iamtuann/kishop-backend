@@ -37,7 +37,7 @@ public class CartController {
     private final CartItemService cartItemService;
 
     @PostMapping("/items")
-    public CommonResponse<List<CartItemDetail>> getCartItems(@RequestBody List<CartItemRequest> requests) {
+    public ResponseEntity<CommonResponse<?>> getCartItems(@RequestBody List<CartItemRequest> requests) {
         CommonResponse<List<CartItemDetail>> response = new CommonResponse<>();
         try {
             List<CartItemDetail> cartItemDetails = new ArrayList<>();
@@ -47,11 +47,11 @@ public class CartController {
                     if (pd != null) {
                         cartItemDetails.add(new CartItemDetail(pd, item.getQuantity()));
                     } else {
-                        response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+                        response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
                         response.setMessage("Product Detail not exist");
                         response.setOutput(null);
-                        response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
-                        return response;
+                        response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
+                        return ResponseEntity.ok(response);
                     }
                 }
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
@@ -65,18 +65,24 @@ public class CartController {
             response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
             logger.error("Get products order info", e);
         }
-        return response;
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/items")
     public ResponseEntity<CommonResponse<?>> getCartItems(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         CommonResponse<List<CartItemDetail>> response = new CommonResponse<>();
         try {
-            List<CartItemDetail> cartItemDetails = cartService.getAllCartItemsByUserId(userDetails.getId());
-            response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-            response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setMessage("Get cart items success");
-            response.setOutput(cartItemDetails);
+            if (userDetails != null) {
+                List<CartItemDetail> cartItemDetails = cartService.getAllCartItemsByUserId(userDetails.getId());
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setMessage("Get cart items success");
+                response.setOutput(cartItemDetails);
+            } else {
+                response.setStatusCode(Constants.RestApiReturnCode.UNAUTHORIZED);
+                response.setError(Constants.RestApiReturnCode.UNAUTHORIZED_TXT);
+                response.setMessage("Unauthorized");
+            }
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
             response.setMessage("System error");
@@ -93,11 +99,12 @@ public class CartController {
         try {
             ProductDetail pd = productDetailService.findOne(request.getDetailId());
             if (pd == null) {
-                response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
-                response.setMessage("Product Detail not exist");
-                response.setOutput(null);
-                response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
-                return ResponseEntity.ok(response);
+//                response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
+//                response.setMessage("Product Detail not exist");
+//                response.setOutput(null);
+//                response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
+//                return ResponseEntity.ok(response);
+                throw new IllegalArgumentException("Product Detail is not exist");
             }
             CartItemBasic output = null;
             if (userDetails == null) {
@@ -107,22 +114,18 @@ public class CartController {
                 response.setOutput(output);
                 return ResponseEntity.ok(response);
             }
-            CartItem cartItem;
-            if (request.getId() == null) {
-                cartItem = cartItemService.create(request, userDetails.getId());
-            } else {
-                cartItem = cartItemService.update(request, userDetails.getId());
-            }
+            CartItem cartItem = cartItemService.update(request, userDetails.getId());
             if (cartItem == null) {
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-                response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
                 response.setMessage("Delete CartItem successful");
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
             } else {
                 output = new CartItemBasic(cartItem);
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setMessage("Update CartItem successful");
+                response.setOutput(output);
             }
-            response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-            response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setOutput(output);
         } catch (IllegalArgumentException e) {
             response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
             response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
