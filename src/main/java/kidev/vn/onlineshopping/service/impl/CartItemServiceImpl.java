@@ -8,7 +8,6 @@ import kidev.vn.onlineshopping.service.CartItemService;
 import kidev.vn.onlineshopping.service.CartService;
 import kidev.vn.onlineshopping.service.ProductDetailService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.InvalidPropertyException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -46,18 +45,25 @@ public class CartItemServiceImpl implements CartItemService {
         CartItem cartItem = cartItemRepo.getCartItemByCartIdAndProductDetailId(cart.getId(), item.getDetailId());
         // create cart item if not exist
         if (cartItem == null) {
+            if (item.getQuantity() == null) {
+                item.setQuantity(1);
+            }
             cartItem = this.create(item, userId);
             return cartItem;
         }
         // delete cart item
-        if (item.getQuantity() == null || item.getQuantity() <= 0) {
+        if (item.getQuantity() != null &&  item.getQuantity() <= 0) {
             this.delete(cartItem);
             return null;
+        }
+        //update cart item
+        if (item.getQuantity() == null) {
+            cartItem.setQuantity(cartItem.getQuantity() + 1);
         } else {
             cartItem.setQuantity(item.getQuantity());
-            cartItem.setUpdatedDate(new Date());
-            return cartItemRepo.save(cartItem);
         }
+        cartItem.setUpdatedDate(new Date());
+        return cartItemRepo.save(cartItem);
     }
 
     @Override

@@ -12,15 +12,12 @@ import kidev.vn.onlineshopping.service.CartItemService;
 import kidev.vn.onlineshopping.service.CartService;
 import kidev.vn.onlineshopping.service.ProductDetailService;
 import lombok.AllArgsConstructor;
-import netscape.security.Principal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,20 +90,40 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/count-items")
+    public ResponseEntity<CommonResponse<Integer>> countCartItems(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CommonResponse<Integer> response = new CommonResponse<>();
+        try {
+            if (userDetails == null) {
+                response.setStatusCode(Constants.RestApiReturnCode.UNAUTHORIZED);
+                response.setError(Constants.RestApiReturnCode.UNAUTHORIZED_TXT);
+                response.setMessage("Unauthorized");
+            } else {
+                Integer count = cartService.countCartItems(userDetails.getId());
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setMessage("Get cart items success");
+                response.setOutput(count);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage("System error");
+            response.setOutput(null);
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            logger.error("Get products order info", e);
+        }
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/update-item")
     public ResponseEntity<CommonResponse<CartItemBasic>> calculateProductOrderPrice(@RequestBody CartItemRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         CommonResponse<CartItemBasic> response = new CommonResponse<>();
         try {
             ProductDetail pd = productDetailService.findOne(request.getDetailId());
             if (pd == null) {
-//                response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
-//                response.setMessage("Product Detail not exist");
-//                response.setOutput(null);
-//                response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
-//                return ResponseEntity.ok(response);
                 throw new IllegalArgumentException("Product Detail is not exist");
             }
-            CartItemBasic output = null;
+            CartItemBasic output;
             if (userDetails == null) {
                 output = new CartItemBasic(pd, request.getQuantity());
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);

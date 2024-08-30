@@ -12,6 +12,8 @@ public interface CartService {
 
     List<CartItemDetail> getAllCartItemsByUserId(Long userId);
 
+    Integer countCartItems(Long userId);
+
     void create(Cart cart);
 
     void update(Cart cart);

@@ -4,7 +4,6 @@ import kidev.vn.onlineshopping.entity.Cart;
 import kidev.vn.onlineshopping.entity.CartItem;
 import kidev.vn.onlineshopping.model.cart.CartItemDetail;
 import kidev.vn.onlineshopping.repository.CartRepo;
-import kidev.vn.onlineshopping.service.AuthUserService;
 import kidev.vn.onlineshopping.service.CartService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +33,11 @@ public class CartServiceImpl implements CartService {
         return cartItems.stream()
                 .map(CartItemDetail::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Integer countCartItems(Long userId) {
+        return cartRepo.countCartItems(userId);
     }
 
     @Override

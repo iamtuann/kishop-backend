@@ -20,4 +20,10 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
             " JOIN c.authUser au" +
             " WHERE au.id = :userId")
     List<CartItem> getAllCartItemsByUserId(@Param(value = "userId") Long userId);
+
+    @Query(value = "SELECT SUM(ci.quantity) FROM CartItem ci" +
+            " INNER JOIN ci.cart c" +
+            " INNER JOIN c.authUser au" +
+            " WHERE au.id = :userId")
+    Integer countCartItems(Long userId);
 }
