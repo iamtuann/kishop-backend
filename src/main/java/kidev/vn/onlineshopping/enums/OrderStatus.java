@@ -1,10 +1,14 @@
 package kidev.vn.onlineshopping.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum OrderStatus {
     PENDING(0),
     CONFIRMED(1),
-    COMPLETED(2),
-    CANCELED(3);
+    SHIPPING(2),
+    COMPLETED(3),
+    CANCELED(4);
 
     private final int value;
 
@@ -12,7 +16,12 @@ public enum OrderStatus {
         this.value = value;
     }
 
-    public int getValue() {
-        return this.value;
+    public static OrderStatus fromValue(int value) {
+        for (OrderStatus status : OrderStatus.values()) {
+            if (status.getValue() == value) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Invalid order status value: " + value);
     }
 }

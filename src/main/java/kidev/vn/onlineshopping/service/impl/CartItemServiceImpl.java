@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -69,6 +70,11 @@ public class CartItemServiceImpl implements CartItemService {
     @Override
     public void delete(CartItem cartItem) {
         cartItemRepo.delete(cartItem);
+    }
+
+    @Override
+    public void deleteAll(List<CartItem> cartItems) {
+        cartItemRepo.deleteAll(cartItems);
     }
 
     @Override

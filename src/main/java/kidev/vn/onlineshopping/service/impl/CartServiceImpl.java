@@ -8,6 +8,7 @@ import kidev.vn.onlineshopping.service.CartService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public List<CartItemDetail> getAllCartItemsByUserId(Long userId) {
+    public List<CartItem> getCartItemsByUserId(Long userId) {
+        return cartRepo.getAllCartItemsByUserId(userId);
+    }
+
+    @Override
+    public List<CartItemDetail> getCartItemDetailsByUserId(Long userId) {
         List<CartItem> cartItems = cartRepo.getAllCartItemsByUserId(userId);
         return cartItems.stream()
                 .map(CartItemDetail::new)

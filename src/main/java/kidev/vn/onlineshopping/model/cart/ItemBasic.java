@@ -1,5 +1,6 @@
 package kidev.vn.onlineshopping.model.cart;
 
+import kidev.vn.onlineshopping.common.Priceable;
 import kidev.vn.onlineshopping.entity.CartItem;
 import kidev.vn.onlineshopping.entity.ProductDetail;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItemBasic {
+public class ItemBasic implements Priceable {
     private Long id;
     private Long detailId;
     private Long price;
@@ -19,7 +20,7 @@ public class CartItemBasic {
     private Integer quantity;
 
     // data from ProductDetail (not auth)
-    public CartItemBasic(ProductDetail productDetail, Integer quantity) {
+    public ItemBasic(ProductDetail productDetail, Integer quantity) {
         this.detailId = productDetail.getId();
         this.quantity = quantity;
         this.price = productDetail.getPrice();
@@ -29,7 +30,7 @@ public class CartItemBasic {
     }
 
     // data from CartItem (auth)
-    public CartItemBasic(CartItem cartItem) {
+    public ItemBasic(CartItem cartItem) {
         this.id = cartItem.getId();
         this.detailId = cartItem.getProductDetail().getId();
         this.quantity = cartItem.getQuantity();

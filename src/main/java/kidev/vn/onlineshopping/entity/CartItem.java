@@ -1,17 +1,17 @@
 package kidev.vn.onlineshopping.entity;
 
+import kidev.vn.onlineshopping.common.Priceable;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @Entity
 @Table(name = "cart_item")
-public class CartItem {
+public class CartItem implements Priceable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,18 +41,22 @@ public class CartItem {
         }
     }
 
+    @Override
     public Long getPrice() {
         return productDetail.getPrice();
     }
 
+    @Override
     public Long getOldPrice() {
         return productDetail.getOldPrice();
     }
 
+    @Override
     public Long getTotalPrice() {
         return this.getPrice() * this.quantity;
     }
 
+    @Override
     public Long getTotalOldPrice() {
         return this.getOldPrice() * this.quantity;
     }

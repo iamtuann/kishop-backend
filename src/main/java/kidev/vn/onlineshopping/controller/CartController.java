@@ -6,7 +6,7 @@ import kidev.vn.onlineshopping.entity.CartItem;
 import kidev.vn.onlineshopping.entity.ProductDetail;
 import kidev.vn.onlineshopping.model.CommonResponse;
 import kidev.vn.onlineshopping.model.cart.CartItemDetail;
-import kidev.vn.onlineshopping.model.cart.CartItemBasic;
+import kidev.vn.onlineshopping.model.cart.ItemBasic;
 import kidev.vn.onlineshopping.model.cart.CartItemRequest;
 import kidev.vn.onlineshopping.service.CartItemService;
 import kidev.vn.onlineshopping.service.CartService;
@@ -70,7 +70,7 @@ public class CartController {
         CommonResponse<List<CartItemDetail>> response = new CommonResponse<>();
         try {
             if (userDetails != null) {
-                List<CartItemDetail> cartItemDetails = cartService.getAllCartItemsByUserId(userDetails.getId());
+                List<CartItemDetail> cartItemDetails = cartService.getCartItemDetailsByUserId(userDetails.getId());
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
                 response.setMessage("Get cart items success");
@@ -116,16 +116,16 @@ public class CartController {
     }
 
     @PostMapping("/update-item")
-    public ResponseEntity<CommonResponse<CartItemBasic>> calculateProductOrderPrice(@RequestBody CartItemRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        CommonResponse<CartItemBasic> response = new CommonResponse<>();
+    public ResponseEntity<CommonResponse<ItemBasic>> calculateProductOrderPrice(@RequestBody CartItemRequest request, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CommonResponse<ItemBasic> response = new CommonResponse<>();
         try {
             ProductDetail pd = productDetailService.findOne(request.getDetailId());
             if (pd == null) {
                 throw new IllegalArgumentException("Product Detail is not exist");
             }
-            CartItemBasic output;
+            ItemBasic output;
             if (userDetails == null) {
-                output = new CartItemBasic(pd, request.getQuantity());
+                output = new ItemBasic(pd, request.getQuantity());
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
                 response.setOutput(output);
@@ -137,7 +137,7 @@ public class CartController {
                 response.setMessage("Delete CartItem successful");
                 response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
             } else {
-                output = new CartItemBasic(cartItem);
+                output = new ItemBasic(cartItem);
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
                 response.setMessage("Update CartItem successful");

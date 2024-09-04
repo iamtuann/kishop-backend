@@ -1,5 +1,7 @@
 package kidev.vn.onlineshopping.entity;
 
+import kidev.vn.onlineshopping.enums.OrderStatus;
+import kidev.vn.onlineshopping.enums.PaymentType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "order")
+@Table(name = "orders")
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,7 +61,7 @@ public class Order {
     private Long shippingFee;
 
     @Column(name = "subtotal_price")
-    private Long subtotalPrice;
+    private Long subTotalPrice;
 
     @Column(name = "total_price")
     private Long totalPrice;
@@ -75,4 +77,20 @@ public class Order {
 
     @Column(name = "shipping_status")
     private Integer shippingStatus;
+
+    public PaymentType getPaymentType() {
+        return PaymentType.fromValue(this.paymentType);
+    }
+
+    public void setPaymentType(PaymentType paymentType) {
+        this.paymentType = paymentType.getValue();
+    }
+
+    public OrderStatus getOrderStatus() {
+        return OrderStatus.fromValue(this.orderStatus);
+    }
+
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus.getValue();
+    }
 }
