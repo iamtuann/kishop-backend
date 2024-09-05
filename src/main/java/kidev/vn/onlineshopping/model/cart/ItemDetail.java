@@ -1,6 +1,7 @@
 package kidev.vn.onlineshopping.model.cart;
 
 import kidev.vn.onlineshopping.entity.CartItem;
+import kidev.vn.onlineshopping.entity.OrderItem;
 import kidev.vn.onlineshopping.entity.Product;
 import kidev.vn.onlineshopping.entity.ProductDetail;
 import lombok.AllArgsConstructor;
@@ -49,5 +50,19 @@ public class ItemDetail extends ItemBasic {
         this.size = cartItem.getProductDetail().getSize().getName();
         this.brand = product.getBrand().getName();
         this.thumbnail = cartItem.getProductVariant().getImageUrl();
+    }
+
+    public ItemDetail(OrderItem orderItem) {
+        super(orderItem);
+        Product product = orderItem.getProduct();
+        this.productId = product.getId();
+        this.variantId = orderItem.getProductVariant().getId();
+        this.name = product.getName();
+        this.variantName = orderItem.getProductVariant().getName();
+        this.slug = product.getSlug();
+        this.color = orderItem.getProductVariant().getColor().getName();
+        this.size = orderItem.getProductDetail().getSize().getName();
+        this.brand = product.getBrand().getName();
+        this.thumbnail = orderItem.getProductVariant().getImageUrl();
     }
 }

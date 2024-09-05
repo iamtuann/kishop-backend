@@ -38,14 +38,12 @@ public class ProductServiceImpl implements ProductService {
     private Boolean isFiltering(List<String> categories, List<String> brandNames,
                                 List<String> sizes, List<String> colors,
                                 List<String> genders, Boolean sale) {
-        if (categories!=null && !categories.isEmpty() ||
-                brandNames!=null && !brandNames.isEmpty() ||
-                sizes!=null && !sizes.isEmpty() ||
-                colors!=null && !colors.isEmpty() ||
-                genders!=null && !genders.isEmpty() ||
-                sale!=null && sale == true
-        ) return true;
-        else return false;
+        return categories != null && !categories.isEmpty() ||
+                brandNames != null && !brandNames.isEmpty() ||
+                sizes != null && !sizes.isEmpty() ||
+                colors != null && !colors.isEmpty() ||
+                genders != null && !genders.isEmpty() ||
+                sale != null && sale;
     }
 
     @Override

@@ -9,6 +9,7 @@ import kidev.vn.onlineshopping.model.order.OrderShippingInfo;
 import kidev.vn.onlineshopping.repository.OrderRepo;
 import kidev.vn.onlineshopping.service.AuthUserService;
 import kidev.vn.onlineshopping.service.CartItemService;
+import kidev.vn.onlineshopping.service.OrderHistoryService;
 import kidev.vn.onlineshopping.service.OrderService;
 import kidev.vn.onlineshopping.utils.CalculatePrice;
 import kidev.vn.onlineshopping.utils.GenerateCode;
@@ -28,6 +29,8 @@ public class OrderServiceImpl implements OrderService {
     private final AuthUserService authUserService;
 
     private final CartItemService cartItemService;
+
+    private final OrderHistoryService orderHistoryService;
 
     @Override
     public Order findOne(Long id) {
@@ -62,6 +65,7 @@ public class OrderServiceImpl implements OrderService {
         savedOrder.setTotalPrice(subTotalPrice + savedOrder.getShippingFee());
         savedOrder.setOrderCode(GenerateCode.generateOrderCode(savedOrder.getId()));
         order = orderRepo.save(savedOrder);
+        orderHistoryService.create(order);
         cartItemService.deleteAll(cartItems);
         return order;
     }

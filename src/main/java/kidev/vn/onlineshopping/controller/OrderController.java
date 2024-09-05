@@ -3,10 +3,12 @@ package kidev.vn.onlineshopping.controller;
 import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.config.security.service.UserDetailsImpl;
 import kidev.vn.onlineshopping.entity.CartItem;
+import kidev.vn.onlineshopping.entity.Order;
 import kidev.vn.onlineshopping.model.CommonResponse;
 import kidev.vn.onlineshopping.model.cart.CartItemDetail;
-import kidev.vn.onlineshopping.model.order.OrderShippingInfo;
+import kidev.vn.onlineshopping.model.order.OrderModel;
 import kidev.vn.onlineshopping.model.order.OrderPaymentInfo;
+import kidev.vn.onlineshopping.model.order.OrderShippingInfo;
 import kidev.vn.onlineshopping.service.CartService;
 import kidev.vn.onlineshopping.service.OrderService;
 import lombok.AllArgsConstructor;
@@ -54,15 +56,17 @@ public class OrderController {
     }
 
     @PostMapping("")
-    public ResponseEntity<CommonResponse<?>> createOrder(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody OrderShippingInfo addressInfo) {
-        CommonResponse<?> response = new CommonResponse<>();
+    public ResponseEntity<CommonResponse<OrderModel>> createOrder(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody OrderShippingInfo addressInfo) {
+        CommonResponse<OrderModel> response = new CommonResponse<>();
         try {
             if (userDetails != null) {
                 List<CartItem> cartItems = cartService.getCartItemsByUserId(userDetails.getId());
-                orderService.create(addressInfo, cartItems, userDetails.getId());
+                Order order = orderService.create(addressInfo, cartItems, userDetails.getId());
+                OrderModel orderModel = new OrderModel(order);
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
                 response.setMessage("create order success");
+                response.setOutput(orderModel);
             } else {
                 response.setStatusCode(Constants.RestApiReturnCode.UNAUTHORIZED);
                 response.setError(Constants.RestApiReturnCode.UNAUTHORIZED_TXT);
