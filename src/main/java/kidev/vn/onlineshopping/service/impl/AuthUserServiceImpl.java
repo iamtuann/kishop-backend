@@ -2,12 +2,15 @@ package kidev.vn.onlineshopping.service.impl;
 
 import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.entity.AuthUser;
+import kidev.vn.onlineshopping.entity.Cart;
 import kidev.vn.onlineshopping.entity.Role;
 import kidev.vn.onlineshopping.model.authUser.AuthUserModel;
 import kidev.vn.onlineshopping.model.authUser.AuthUserRequest;
 import kidev.vn.onlineshopping.repository.AuthUserRepo;
 import kidev.vn.onlineshopping.service.AuthUserService;
+import kidev.vn.onlineshopping.service.CartService;
 import kidev.vn.onlineshopping.service.RoleService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,16 +18,17 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 
+@AllArgsConstructor
 @Service
 public class AuthUserServiceImpl implements AuthUserService {
-    @Autowired
-    AuthUserRepo authUserRepo;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final AuthUserRepo authUserRepo;
 
-    @Autowired
-    RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
+
+    private final RoleService roleService;
+
+    private final CartService cartService;
 
     @Override
     public AuthUser findById(Long id) {
@@ -34,6 +38,11 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Override
     public Boolean existsByEmail(String email) {
         return authUserRepo.existsByEmail(email);
+    }
+
+    @Override
+    public Boolean existsAuthUserById(Long id) {
+        return authUserRepo.existsAuthUserById(id);
     }
 
     @Override
@@ -50,7 +59,9 @@ public class AuthUserServiceImpl implements AuthUserService {
         roles.add(roleService.findById(Constants.AuthRoles.ROLE_USER_ID));
         authUser.setRoles(roles);
         authUser.setStatus(Constants.AuthUserStatus.NOT_VERIFY);
-        return new AuthUserModel(authUserRepo.save(authUser));
+        AuthUser user = authUserRepo.save(authUser);
+        cartService.create(new Cart(null, user));
+        return new AuthUserModel(user);
     }
 
     @Override

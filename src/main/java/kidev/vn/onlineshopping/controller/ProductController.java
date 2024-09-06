@@ -33,7 +33,7 @@ public class ProductController {
     @Autowired
     ProductVariantService productVariantService;
     @Autowired
-    ProductQuantityService productQuantityService;
+    ProductDetailService productDetailService;
     @Autowired
     ProductImageService productImageService;
     @Autowired
@@ -185,23 +185,23 @@ public class ProductController {
         return response;
     }
 
-    @PostMapping("save-quantity")
-    public CommonResponse<?> saveProductQuantity(@RequestBody List<ProductQuantityRequest> request) {
+    @PostMapping("save-detail")
+    public CommonResponse<?> saveProductDetail(@RequestBody List<ProductDetailRequest> request) {
         CommonResponse<?> response = new CommonResponse<>();
         try {
-            for (ProductQuantityRequest detail : request) {
+            for (ProductDetailRequest detail : request) {
                 ProductVariant pv = productVariantService.findOne(detail.getProductVariantId());
-                for (ProductQuantityRequestModel model : detail.getModels()) {
-                    ProductQuantity productQuantity;
+                for (ProductDetailRequestModel model : detail.getModels()) {
+                    ProductDetail productDetail;
                     if (model.getId() != null) {
-                        productQuantity = productQuantityService.findOne(model.getId());
+                        productDetail = productDetailService.findOne(model.getId());
                     } else {
-                        productQuantity = new ProductQuantity();
-                        productQuantity.setProductVariant(pv);
+                        productDetail = new ProductDetail();
+                        productDetail.setProductVariant(pv);
                     }
-                    productQuantity.setSize(sizeService.findOne(model.getSizeId()));
-                    productQuantity.setQuantity(model.getQuantity());
-                    productQuantityService.create(productQuantity);
+                    productDetail.setSize(sizeService.findOne(model.getSizeId()));
+                    productDetail.setQuantity(model.getQuantity());
+                    productDetailService.create(productDetail);
                 }
             }
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);

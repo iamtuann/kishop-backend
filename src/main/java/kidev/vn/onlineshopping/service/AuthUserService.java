@@ -9,6 +9,8 @@ public interface AuthUserService {
 
     Boolean existsByEmail(String email);
 
+    Boolean existsAuthUserById(Long id);
+
     AuthUserModel create(AuthUserRequest userRequest);
 
     AuthUser update(AuthUserRequest userRequest);

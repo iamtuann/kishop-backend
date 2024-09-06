@@ -10,8 +10,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "product_quantity")
-public class ProductQuantity {
+@Table(name = "product_detail")
+public class ProductDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,4 +29,12 @@ public class ProductQuantity {
 
     @Column(name = "sold")
     private Integer sold;
+
+    public Long getPrice() {
+        return productVariant.getPrice();
+    }
+
+    public Long getOldPrice() {
+        return productVariant.getOldPrice();
+    }
 }

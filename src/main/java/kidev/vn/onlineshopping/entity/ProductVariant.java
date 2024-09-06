@@ -38,7 +38,7 @@ public class ProductVariant {
     private List<ProductImage> productImages;
 
     @OneToMany(mappedBy = "productVariant",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ProductQuantity> productQuantities;
+    private List<ProductDetail> productDetails;
 
     @Column(name = "old_price")
     private Long oldPrice;

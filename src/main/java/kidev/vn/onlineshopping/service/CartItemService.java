@@ -1,13 +1,20 @@
 package kidev.vn.onlineshopping.service;
 
 import kidev.vn.onlineshopping.entity.CartItem;
+import kidev.vn.onlineshopping.model.cart.CartItemRequest;
+
+import java.util.List;
 
 public interface CartItemService {
     CartItem findOne(Long id);
 
-    void create(CartItem cartItem);
+    CartItem create(CartItemRequest item, Long userId);
 
-    void update(CartItem cartItem);
+    CartItem update(CartItemRequest item, Long userId);
 
     void delete(CartItem cartItem);
+
+    void deleteAll(List<CartItem> cartItems);
+
+    void deleteById(Long cartItemId);
 }

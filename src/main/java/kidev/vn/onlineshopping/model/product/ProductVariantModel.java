@@ -1,7 +1,7 @@
 package kidev.vn.onlineshopping.model.product;
 
 import kidev.vn.onlineshopping.entity.ProductImage;
-import kidev.vn.onlineshopping.entity.ProductQuantity;
+import kidev.vn.onlineshopping.entity.ProductDetail;
 import kidev.vn.onlineshopping.entity.ProductVariant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,7 @@ public class ProductVariantModel {
     private Integer status;
     private String previewImage;
     private List<String> imageUrls;
-    private List<ProductQuantityModel> productQuantities;
+    private List<ProductDetailModel> productDetails;
 
     public ProductVariantModel(ProductVariant p) {
         this.id = p.getId();
@@ -36,9 +36,9 @@ public class ProductVariantModel {
         for (ProductImage image : p.getProductImages()) {
             this.imageUrls.add(image.getUrl());
         }
-        this.productQuantities = new ArrayList<>();
-        for (ProductQuantity pq : p.getProductQuantities()) {
-            this.productQuantities.add(new ProductQuantityModel(pq));
+        this.productDetails = new ArrayList<>();
+        for (ProductDetail pq : p.getProductDetails()) {
+            this.productDetails.add(new ProductDetailModel(pq));
         }
     }
 }
