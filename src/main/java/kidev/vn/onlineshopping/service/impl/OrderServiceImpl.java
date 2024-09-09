@@ -40,8 +40,19 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order create(OrderShippingInfo addressInfo, List<CartItem> cartItems, Long userId) {
-        Order order = new Order();
+        Order order = createOrder(addressInfo, cartItems);
         order.setAuthUser(authUserService.findById(userId));
+        cartItemService.deleteAll(cartItems);
+        return order;
+    }
+
+    @Override
+    public Order createWithoutAuth(OrderShippingInfo addressInfo, List<CartItem> cartItems) {
+        return createOrder(addressInfo, cartItems);
+    }
+
+    private Order createOrder(OrderShippingInfo addressInfo, List<CartItem> cartItems) {
+        Order order = new Order();
         order.setReceiverName(addressInfo.getReceiverName());
         order.setPhoneNumber(addressInfo.getPhoneNumber());
         order.setOrderDate(new Date());
@@ -66,7 +77,6 @@ public class OrderServiceImpl implements OrderService {
         savedOrder.setOrderCode(GenerateCode.generateOrderCode(savedOrder.getId()));
         order = orderRepo.save(savedOrder);
         orderHistoryService.create(order);
-        cartItemService.deleteAll(cartItems);
         return order;
     }
 }

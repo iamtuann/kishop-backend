@@ -2,6 +2,8 @@ package kidev.vn.onlineshopping.service.impl;
 
 import kidev.vn.onlineshopping.entity.Cart;
 import kidev.vn.onlineshopping.entity.CartItem;
+import kidev.vn.onlineshopping.entity.ProductDetail;
+import kidev.vn.onlineshopping.model.cart.CartItemDetail;
 import kidev.vn.onlineshopping.model.cart.CartItemRequest;
 import kidev.vn.onlineshopping.repository.CartItemRepo;
 import kidev.vn.onlineshopping.service.CartItemService;
@@ -10,6 +12,7 @@ import kidev.vn.onlineshopping.service.ProductDetailService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -65,6 +68,39 @@ public class CartItemServiceImpl implements CartItemService {
         }
         cartItem.setUpdatedDate(new Date());
         return cartItemRepo.save(cartItem);
+    }
+
+    @Override
+    public List<CartItemDetail> getDetailsFromCartItemRequest(List<CartItemRequest> cartItemRequests) {
+        if (cartItemRequests == null || cartItemRequests.isEmpty()) {
+            throw new IllegalArgumentException("List product cannot be empty");
+        }
+        List<CartItemDetail> cartItemDetails = new ArrayList<>();
+        for (CartItemRequest item : cartItemRequests) {
+            if (item.getQuantity() < 0) {
+                throw new IllegalArgumentException("Quantity can not less than 1");
+            }
+            ProductDetail pd = productDetailService.findOne(item.getDetailId());
+            if (pd != null) {
+                cartItemDetails.add(new CartItemDetail(pd, item.getQuantity()));
+            } else {
+                throw new IllegalArgumentException("Product Detail is not exist");
+            }
+        }
+        return cartItemDetails;
+    }
+
+    @Override
+    public List<CartItem> getCartItemFromRequests(List<CartItemRequest> cartItemRequests) {
+        List<CartItem> cartItems = new ArrayList<>();
+        for (CartItemRequest item : cartItemRequests) {
+            ProductDetail pd = productDetailService.findOne(item.getDetailId());
+            CartItem cartItem = new CartItem();
+            cartItem.setProductDetail(pd);
+            cartItem.setQuantity(item.getQuantity());
+            cartItems.add(cartItem);
+        }
+        return cartItems;
     }
 
     @Override

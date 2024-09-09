@@ -2,6 +2,7 @@ package kidev.vn.onlineshopping.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -56,6 +57,7 @@ public class Product {
     private List<Color> colors;
 
     @OneToMany(mappedBy = "product",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
     List<ProductVariant> productVariants;
 
     @Column(name = "created_date")

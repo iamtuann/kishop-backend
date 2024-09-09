@@ -2,6 +2,7 @@ package kidev.vn.onlineshopping.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ public class ProductVariant {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
+    @EqualsAndHashCode.Exclude
     private Product product;
 
     @Column(name = "name")

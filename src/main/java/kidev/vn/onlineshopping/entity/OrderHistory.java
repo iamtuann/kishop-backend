@@ -44,9 +44,9 @@ public class OrderHistory {
 
     public OrderHistory(Order order) {
         this.order = order;
-        this.date = new Date();
+        this.date = order.getOrderDate();
         this.title = order.getOrderStatus().getTitle();
         this.description = order.getOrderStatus().getDescription();
-        this.orderStatus = order.getOrderStatus().getValue();
+        this.setOrderStatus(order.getOrderStatus());
     }
 }

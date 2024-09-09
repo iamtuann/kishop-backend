@@ -10,4 +10,6 @@ public interface OrderService {
     Order findOne(Long id);
 
     Order create(OrderShippingInfo addressInfo, List<CartItem> cartItems, Long userId);
+
+    Order createWithoutAuth(OrderShippingInfo addressInfo, List<CartItem> cartItems);
 }
