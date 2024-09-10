@@ -5,6 +5,7 @@ import kidev.vn.onlineshopping.entity.Order;
 import kidev.vn.onlineshopping.entity.OrderItem;
 import kidev.vn.onlineshopping.enums.OrderStatus;
 import kidev.vn.onlineshopping.enums.PaymentStatus;
+import kidev.vn.onlineshopping.model.order.OrderModel;
 import kidev.vn.onlineshopping.model.order.OrderShippingInfo;
 import kidev.vn.onlineshopping.repository.OrderRepo;
 import kidev.vn.onlineshopping.service.AuthUserService;
@@ -49,6 +50,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order createWithoutAuth(OrderShippingInfo addressInfo, List<CartItem> cartItems) {
         return createOrder(addressInfo, cartItems);
+    }
+
+    @Override
+    public List<OrderModel> getOrderModelsByUserId(Long userId) {
+        List<Order> orders = orderRepo.getAllByAuthUserId(userId);
+        return orders.stream()
+                .map(OrderModel::new)
+                .collect(Collectors.toList());
     }
 
     private Order createOrder(OrderShippingInfo addressInfo, List<CartItem> cartItems) {

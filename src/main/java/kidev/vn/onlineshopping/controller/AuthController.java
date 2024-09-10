@@ -3,7 +3,9 @@ package kidev.vn.onlineshopping.controller;
 import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.config.security.jwt.JwtUtils;
 import kidev.vn.onlineshopping.config.security.service.UserDetailsImpl;
+import kidev.vn.onlineshopping.entity.AuthUser;
 import kidev.vn.onlineshopping.model.CommonResponse;
+import kidev.vn.onlineshopping.model.authUser.AuthUserModel;
 import kidev.vn.onlineshopping.model.authUser.AuthUserRequest;
 import kidev.vn.onlineshopping.model.authUser.AuthUserResponse;
 import kidev.vn.onlineshopping.model.authUser.LoginRequest;
@@ -16,11 +18,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @AllArgsConstructor
@@ -70,7 +70,7 @@ public class AuthController {
         AuthUserResponse userInfo = new AuthUserResponse(userDetails, jwtCookie);
 
         response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-        response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
+        response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
         response.setOutput(userInfo);
     }
 
@@ -107,5 +107,57 @@ public class AuthController {
             logger.error("login ", e);
             return ResponseEntity.status(500).body(response);
         }
+    }
+
+    @GetMapping("/profile")
+    public CommonResponse<AuthUserModel> getUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CommonResponse<AuthUserModel> response = new CommonResponse<>();
+        try {
+            if (userDetails == null) {
+                response.setStatusCode(Constants.RestApiReturnCode.UNAUTHORIZED);
+                response.setMessage("Unauthorized");
+                response.setOutput(null);
+                response.setError(Constants.RestApiReturnCode.UNAUTHORIZED_TXT);
+            } else {
+                AuthUser authUser = authUserService.findById(userDetails.getId());
+                AuthUserModel userModel = new AuthUserModel(authUser);
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setOutput(userModel);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage("Có lỗi xảy ra");
+            response.setOutput(null);
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            logger.error("login ", e);
+        }
+        return response;
+    }
+
+    @PostMapping("/profile")
+    public CommonResponse<AuthUserModel> updateUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails, AuthUserRequest request) {
+        CommonResponse<AuthUserModel> response = new CommonResponse<>();
+        try {
+            if (userDetails == null) {
+                response.setStatusCode(Constants.RestApiReturnCode.UNAUTHORIZED);
+                response.setMessage("Unauthorized");
+                response.setOutput(null);
+                response.setError(Constants.RestApiReturnCode.UNAUTHORIZED_TXT);
+            } else {
+                AuthUserModel userModel = authUserService.update(userDetails.getId(), request);
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setMessage("Cập nhật tài khoản thành công");
+                response.setOutput(userModel);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage("Có lỗi xảy ra");
+            response.setOutput(null);
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            logger.error("login ", e);
+        }
+        return response;
     }
 }

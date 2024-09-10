@@ -122,4 +122,28 @@ public class OrderController {
         }
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("")
+    public CommonResponse<List<OrderModel>> getOrders(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CommonResponse<List<OrderModel>> response = new CommonResponse<>();
+        try {
+            if (userDetails == null) {
+                response.setStatusCode(Constants.RestApiReturnCode.UNAUTHORIZED);
+                response.setMessage("Unauthorized");
+                response.setError(Constants.RestApiReturnCode.UNAUTHORIZED_TXT);
+            } else {
+                List<OrderModel> orderModels = orderService.getOrderModelsByUserId(userDetails.getId());
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setMessage("create order success");
+                response.setOutput(orderModels);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage("System error");
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            logger.error("createOrder", e);
+        }
+        return response;
+    }
 }

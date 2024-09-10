@@ -27,24 +27,10 @@ public interface Constants {
         String ROLE_USER = "USER";
     }
 
-    interface Gender {
-        long MALE_ID = 1L;
-        long FEMALE_ID = 2L;
-        long UNISEX_ID = 3L;
-        String MALE = "Nam";
-        String FEMALE = "Nữ";
-        String UNISEX = "Unisex";
-    }
-
     interface StatusProduct {
         Integer NOTSELL = 0; //Chưa bán
         Integer SELLING = 1; // Đang bán
         Integer STOPSELL = 2;    // Dừng bán
         Integer STOPIMPORT = 3;  // Ngừng nhập
-    }
-
-    interface AuthUserStatus {
-        Integer NOT_VERIFY = 0;
-        Integer VERIFIED = 1;
     }
 }

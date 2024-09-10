@@ -1,5 +1,7 @@
 package kidev.vn.onlineshopping.entity;
 
+import kidev.vn.onlineshopping.enums.UserGender;
+import kidev.vn.onlineshopping.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -55,4 +57,20 @@ public class AuthUser {
 
     @OneToMany(mappedBy = "authUser", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Address> addresses;
+
+    public UserGender getGender() {
+        return this.gender != null ? UserGender.fromValue(this.gender) : null;
+    }
+
+    public void setGender(UserGender userGender) {
+        this.gender = userGender.getValue();
+    }
+
+    public UserStatus getStatus() {
+        return UserStatus.fromValue(this.status);
+    }
+
+    public void setStatus(UserStatus userStatus) {
+        this.status = userStatus.getValue();
+    }
 }

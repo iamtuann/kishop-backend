@@ -1,6 +1,8 @@
 package kidev.vn.onlineshopping.model.authUser;
 
 import kidev.vn.onlineshopping.entity.AuthUser;
+import kidev.vn.onlineshopping.enums.UserGender;
+import kidev.vn.onlineshopping.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,8 +17,8 @@ public class AuthUserModel {
     private String lastName;
     private String fullName;
     private String email;
-    private Integer gender;
-    private Integer status;
+    private UserGender gender;
+    private UserStatus status;
 
     public AuthUserModel(AuthUser authUser) {
         this.id = authUser.getId();

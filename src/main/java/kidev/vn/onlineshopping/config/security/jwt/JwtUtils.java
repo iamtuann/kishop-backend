@@ -19,7 +19,7 @@ public class JwtUtils {
     private String jwtSecret;
 
     @Value("${security.jwt.token.expire-length}")
-    private int jwtExpirationMs;
+    private long jwtExpirationMs;
 
     @Value("${security.jwt.token.jwtCookieName}")
     private String jwtCookie;
