@@ -27,7 +27,7 @@ security:
   jwt:
     token:
       secret-key: 111111
-      expire-length: 86400000
+      expire-length: 2592000000 #30 days
       jwtCookieName: kishop
 
 store-folder: H:/workspace/online_shopping/store-images/
