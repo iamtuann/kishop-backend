@@ -49,6 +49,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         authUser.setLastName(userRequest.getLastName());
         authUser.setGender(userRequest.getGender());
         authUser.setCreatedDate(new Date());
+        authUser.setDateOfBirth(userRequest.getDateOfBirth());
         authUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         ArrayList<Role> roles = new ArrayList<>();
         roles.add(roleService.findById(Constants.AuthRoles.ROLE_USER_ID));
@@ -66,6 +67,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         authUser.setFirstName(userRequest.getFirstName());
         authUser.setLastName(userRequest.getLastName());
         authUser.setGender(userRequest.getGender());
+        authUser.setDateOfBirth(userRequest.getDateOfBirth());
         AuthUser user = authUserRepo.save(authUser);
         return new AuthUserModel(user);
     }

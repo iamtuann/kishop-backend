@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +20,7 @@ public class AuthUserModel {
     private String fullName;
     private String email;
     private UserGender gender;
+    private Date dateOfBirth;
     private UserStatus status;
 
     public AuthUserModel(AuthUser authUser) {
@@ -29,5 +32,6 @@ public class AuthUserModel {
         this.email = authUser.getEmail();
         this.gender = authUser.getGender();
         this.status = authUser.getStatus();
+        this.dateOfBirth = authUser.getDateOfBirth();
     }
 }

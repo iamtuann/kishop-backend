@@ -33,6 +33,9 @@ public class AuthUser {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name = "dob")
+    private Date dateOfBirth;
+
     @Column(name = "email")
     private String email;
 

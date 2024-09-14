@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum UserStatus {
     NOT_VERIFY(0),
-    VERIFY(1);
+    VERIFIED(1);
 
     private final int value;
 
