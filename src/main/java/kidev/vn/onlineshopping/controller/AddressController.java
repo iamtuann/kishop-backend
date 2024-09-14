@@ -28,7 +28,7 @@ public class AddressController {
             List<AddressModel> addressModels = addressService.getAddressesByAuthUserId(userDetails.getId());
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setMessage("Thành công");
+            response.setMessage("Get addresses success");
             response.setOutput(addressModels);
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
@@ -50,7 +50,7 @@ public class AddressController {
             AddressModel output = addressService.create(addressModel, userDetails.getId());
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setMessage("Thành công");
+            response.setMessage("Create address success");
             response.setOutput(output);
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
@@ -71,14 +71,14 @@ public class AddressController {
         try {
             if (addressService.getAddressByIdAndAuthUserId(addressModel.getId(), userDetails.getId()) == null) {
                 response.setStatusCode(Constants.RestApiReturnCode.NOT_FOUND);
-                response.setMessage("Không tìm thấy Address");
+                response.setMessage("Cannot find address");
                 response.setOutput(null);
                 response.setError(Constants.RestApiReturnCode.NOT_FOUND_TXT);
             } else {
                 AddressModel output = addressService.update(addressModel, userDetails.getId());
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-                response.setMessage("Thành công");
+                response.setMessage("Update address success");
                 response.setOutput(output);
             }
         } catch (Exception e) {
@@ -100,14 +100,14 @@ public class AddressController {
         try {
             if (addressService.getAddressByIdAndAuthUserId(id, userDetails.getId()) == null) {
                 response.setStatusCode(Constants.RestApiReturnCode.NOT_FOUND);
-                response.setMessage("Không tìm thấy Address");
+                response.setMessage("Cannot find address");
                 response.setOutput(null);
                 response.setError(Constants.RestApiReturnCode.NOT_FOUND_TXT);
             } else {
                 addressService.deleteById(id);
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-                response.setMessage("Xóa địa chỉ thành công");
+                response.setMessage("Delete address success");
                 response.setOutput(null);
             }
         } catch (Exception e) {

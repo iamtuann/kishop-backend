@@ -2,6 +2,7 @@ package kidev.vn.onlineshopping.service;
 
 import kidev.vn.onlineshopping.entity.CartItem;
 import kidev.vn.onlineshopping.entity.Order;
+import kidev.vn.onlineshopping.model.order.OrderDetail;
 import kidev.vn.onlineshopping.model.order.OrderModel;
 import kidev.vn.onlineshopping.model.order.OrderShippingInfo;
 
@@ -15,4 +16,6 @@ public interface OrderService {
     Order createWithoutAuth(OrderShippingInfo addressInfo, List<CartItem> cartItems);
 
     List<OrderModel> getOrderModelsByUserId(Long userId);
+
+    OrderDetail getOrderDetailByOrderCodeAndUserId(String orderCode, Long userId);
 }

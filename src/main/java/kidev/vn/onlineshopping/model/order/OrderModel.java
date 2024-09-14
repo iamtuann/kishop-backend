@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 public class OrderModel {
+    private Long id;
     private String receiverName;
     private String phoneNumber;
     private Date orderDate;
@@ -29,8 +30,10 @@ public class OrderModel {
     private Long totalPrice;
     private PaymentType paymentType;
     private OrderStatus orderStatus;
+    String orderStatusTitle;
 
     public OrderModel(Order order) {
+        this.id = order.getId();
         this.receiverName = order.getReceiverName();
         this.phoneNumber = order.getPhoneNumber();
         this.orderDate = order.getOrderDate();
@@ -49,5 +52,6 @@ public class OrderModel {
         this.totalPrice = order.getTotalPrice();
         this.paymentType = order.getPaymentType();
         this.orderStatus = order.getOrderStatus();
+        this.orderStatusTitle = order.getOrderStatus().getTitle();
     }
 }

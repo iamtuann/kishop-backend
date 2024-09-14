@@ -7,6 +7,7 @@ import kidev.vn.onlineshopping.entity.Order;
 import kidev.vn.onlineshopping.model.CommonResponse;
 import kidev.vn.onlineshopping.model.cart.CartItemDetail;
 import kidev.vn.onlineshopping.model.cart.CartItemRequest;
+import kidev.vn.onlineshopping.model.order.OrderDetail;
 import kidev.vn.onlineshopping.model.order.OrderModel;
 import kidev.vn.onlineshopping.model.order.OrderPaymentInfo;
 import kidev.vn.onlineshopping.model.order.OrderRequest;
@@ -137,6 +138,34 @@ public class OrderController {
                 response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
                 response.setMessage("create order success");
                 response.setOutput(orderModels);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage("System error");
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            logger.error("createOrder", e);
+        }
+        return response;
+    }
+
+    @GetMapping("/{orderCode}")
+    public CommonResponse<OrderDetail> getOrderDetail(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable String orderCode
+    ) {
+        CommonResponse<OrderDetail> response = new CommonResponse<>();
+        try {
+            OrderDetail orderDetail = orderService.getOrderDetailByOrderCodeAndUserId(orderCode, userDetails.getId());
+            if (orderDetail == null) {
+                response.setStatusCode(Constants.RestApiReturnCode.NOT_FOUND);
+                response.setMessage("Cannot find order");
+                response.setOutput(null);
+                response.setError(Constants.RestApiReturnCode.NOT_FOUND_TXT);
+            } else {
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setMessage("Get order success");
+                response.setOutput(orderDetail);
             }
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
