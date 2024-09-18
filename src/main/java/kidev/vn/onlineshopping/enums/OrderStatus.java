@@ -4,16 +4,22 @@ import lombok.Getter;
 
 @Getter
 public enum OrderStatus {
-    PENDING(0),
-    CONFIRMED(1),
-    SHIPPING(2),
-    COMPLETED(3),
-    CANCELED(4);
+    PENDING(0, "Đặt hàng thành công", "Đơn hàng đang chờ phê duyệt"),
+    CONFIRMED(1, "Đã xác nhận", "Đơn hàng đang được chuẩn bị"),
+    SHIPPING(2, "Đang vận chuyển", "Đơn hàng đã được bàn giao cho đơn vị vận chuyển"),
+    COMPLETED(3, "Hoàn thành", "Giao hàng thành công"),
+    CANCELED(4, "Đã huỷ", "Đã huỷ đơn hàng");
 
     private final int value;
 
-    OrderStatus(int value) {
+    private final String title;
+
+    private final String description;
+
+    OrderStatus(int value, String title, String description) {
         this.value = value;
+        this.title = title;
+        this.description = description;
     }
 
     public static OrderStatus fromValue(int value) {

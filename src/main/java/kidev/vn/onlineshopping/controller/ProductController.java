@@ -251,8 +251,8 @@ public class ProductController {
         return response;
     }
 
-    @GetMapping("/list")
-    public CommonResponse<?> searchProduct(@RequestParam(value = "name", required = false) String name,
+    @GetMapping("")
+    public CommonResponse<Page<ProductBasicModel>> searchProduct(@RequestParam(value = "name", required = false) String name,
                                            @RequestParam(value = "categories", required = false) List<String> categories,
                                            @RequestParam(value = "brandNames", required = false) List<String> brandNames,
                                            @RequestParam(value = "sizes", required = false) List<String> sizes,
@@ -263,7 +263,7 @@ public class ProductController {
                                            @RequestParam(defaultValue = "25") int pageSize,
                                            @RequestParam(value = "key", required = false) String key,
                                            @RequestParam(value = "orderBy", required = false) String orderBy) {
-        CommonResponse<List<ProductBasicModel>> response = new CommonResponse<>();
+        CommonResponse<Page<ProductBasicModel>> response = new CommonResponse<>();
         try {
             Sort sort;
             Pageable pageable;
@@ -280,7 +280,7 @@ public class ProductController {
             Page<ProductBasicModel> model = productService.searchProduct(name, categories, brandNames, sizes, colors,genders, sale, pageable);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setOutput(model.getContent());
+            response.setOutput(model);
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
             response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
@@ -313,27 +313,6 @@ public class ProductController {
             response.setOutput(null);
             response.setError("Có lỗi xảy ra");
             logger.error("Get product variant", e);
-        }
-        return response;
-    }
-
-    @GetMapping("/top-new")
-    public CommonResponse<?> getTopNewProduct(@RequestParam(value = "size", required = false, defaultValue = "4") int size) {
-        CommonResponse<List<ProductBasicModel>> response = new CommonResponse<>();
-        try {
-            Pageable pageable;
-            pageable = PageRequest.of(0, size, Sort.by("createdDate").descending());
-            List<ProductBasicModel> productModels = productService.getTopProductByCreatedDate(pageable);
-            response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-            response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setError("Thành công");
-            response.setOutput(productModels);
-        } catch (Exception e) {
-            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
-            response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
-            response.setOutput(null);
-            response.setError("Có lỗi xảy ra");
-            logger.error("Get top new product", e);
         }
         return response;
     }

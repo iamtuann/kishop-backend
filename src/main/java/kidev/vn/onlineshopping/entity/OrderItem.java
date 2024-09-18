@@ -1,7 +1,6 @@
 package kidev.vn.onlineshopping.entity;
 
 import kidev.vn.onlineshopping.common.Priceable;
-import kidev.vn.onlineshopping.model.cart.ItemBasic;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,5 +50,13 @@ public class OrderItem implements Priceable {
     @Override
     public Long getTotalOldPrice() {
         return this.oldPrice * this.quantity;
+    }
+
+    public ProductVariant getProductVariant() {
+        return this.productDetail.getProductVariant();
+    }
+
+    public Product getProduct() {
+        return this.productDetail.getProductVariant().getProduct();
     }
 }

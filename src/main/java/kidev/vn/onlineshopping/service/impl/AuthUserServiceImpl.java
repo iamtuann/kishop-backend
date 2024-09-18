@@ -4,6 +4,7 @@ import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.entity.AuthUser;
 import kidev.vn.onlineshopping.entity.Cart;
 import kidev.vn.onlineshopping.entity.Role;
+import kidev.vn.onlineshopping.enums.UserStatus;
 import kidev.vn.onlineshopping.model.authUser.AuthUserModel;
 import kidev.vn.onlineshopping.model.authUser.AuthUserRequest;
 import kidev.vn.onlineshopping.repository.AuthUserRepo;
@@ -11,7 +12,6 @@ import kidev.vn.onlineshopping.service.AuthUserService;
 import kidev.vn.onlineshopping.service.CartService;
 import kidev.vn.onlineshopping.service.RoleService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,11 +41,6 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
-    public Boolean existsAuthUserById(Long id) {
-        return authUserRepo.existsAuthUserById(id);
-    }
-
-    @Override
     public AuthUserModel create(AuthUserRequest userRequest) {
         AuthUser authUser = new AuthUser();
         authUser.setUsername(userRequest.getEmail());
@@ -54,18 +49,26 @@ public class AuthUserServiceImpl implements AuthUserService {
         authUser.setLastName(userRequest.getLastName());
         authUser.setGender(userRequest.getGender());
         authUser.setCreatedDate(new Date());
+        authUser.setDateOfBirth(userRequest.getDateOfBirth());
         authUser.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         ArrayList<Role> roles = new ArrayList<>();
         roles.add(roleService.findById(Constants.AuthRoles.ROLE_USER_ID));
         authUser.setRoles(roles);
-        authUser.setStatus(Constants.AuthUserStatus.NOT_VERIFY);
+        authUser.setStatus(UserStatus.NOT_VERIFY);
         AuthUser user = authUserRepo.save(authUser);
         cartService.create(new Cart(null, user));
         return new AuthUserModel(user);
     }
 
     @Override
-    public AuthUser update(AuthUserRequest userRequest) {
-        return null;
+    public AuthUserModel update(Long id, AuthUserRequest userRequest) {
+        AuthUser authUser = authUserRepo.findAuthUserById(id);
+        authUser.setEmail(userRequest.getEmail());
+        authUser.setFirstName(userRequest.getFirstName());
+        authUser.setLastName(userRequest.getLastName());
+        authUser.setGender(userRequest.getGender());
+        authUser.setDateOfBirth(userRequest.getDateOfBirth());
+        AuthUser user = authUserRepo.save(authUser);
+        return new AuthUserModel(user);
     }
 }

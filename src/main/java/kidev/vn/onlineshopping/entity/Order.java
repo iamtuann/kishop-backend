@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
@@ -22,6 +23,7 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @Nullable
     private AuthUser authUser;
 
     @Column(name = "receiver_name")
@@ -77,6 +79,9 @@ public class Order {
 
     @Column(name = "shipping_status")
     private Integer shippingStatus;
+
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<OrderHistory> orderHistories;
 
     public PaymentType getPaymentType() {
         return PaymentType.fromValue(this.paymentType);

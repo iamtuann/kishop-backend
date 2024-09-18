@@ -3,10 +3,15 @@ package kidev.vn.onlineshopping.controller;
 import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.config.security.service.UserDetailsImpl;
 import kidev.vn.onlineshopping.entity.CartItem;
+import kidev.vn.onlineshopping.entity.Order;
 import kidev.vn.onlineshopping.model.CommonResponse;
 import kidev.vn.onlineshopping.model.cart.CartItemDetail;
-import kidev.vn.onlineshopping.model.order.OrderShippingInfo;
+import kidev.vn.onlineshopping.model.cart.CartItemRequest;
+import kidev.vn.onlineshopping.model.order.OrderDetail;
+import kidev.vn.onlineshopping.model.order.OrderModel;
 import kidev.vn.onlineshopping.model.order.OrderPaymentInfo;
+import kidev.vn.onlineshopping.model.order.OrderRequest;
+import kidev.vn.onlineshopping.service.CartItemService;
 import kidev.vn.onlineshopping.service.CartService;
 import kidev.vn.onlineshopping.service.OrderService;
 import lombok.AllArgsConstructor;
@@ -28,8 +33,12 @@ public class OrderController {
 
     private final CartService cartService;
 
+    private final CartItemService cartItemService;
+
     @GetMapping("/payment-info")
-    public ResponseEntity<CommonResponse<OrderPaymentInfo>> getOrderInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<CommonResponse<OrderPaymentInfo>> getOrderInfo(
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
         CommonResponse<OrderPaymentInfo> response = new CommonResponse<>();
         try {
             if (userDetails != null) {
@@ -42,7 +51,7 @@ public class OrderController {
             } else {
                 response.setStatusCode(Constants.RestApiReturnCode.UNAUTHORIZED);
                 response.setError(Constants.RestApiReturnCode.UNAUTHORIZED_TXT);
-                response.setMessage("Unauthorized");
+                response.setMessage("unauthorized");
             }
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
@@ -53,21 +62,59 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("")
-    public ResponseEntity<CommonResponse<?>> createOrder(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody OrderShippingInfo addressInfo) {
-        CommonResponse<?> response = new CommonResponse<>();
+    @PostMapping("/payment-info")
+    public ResponseEntity<CommonResponse<OrderPaymentInfo>> getOrderInfo(@RequestBody List<CartItemRequest> request) {
+        CommonResponse<OrderPaymentInfo> response = new CommonResponse<>();
         try {
+            List<CartItemDetail> cartItemDetails = cartItemService.getDetailsFromCartItemRequest(request);
+            OrderPaymentInfo paymentInfo = new OrderPaymentInfo(cartItemDetails);
+            response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+            response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+            response.setMessage("Get payment info success");
+            response.setOutput(paymentInfo);
+        } catch (IllegalArgumentException e) {
+            response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
+            response.setMessage(e.getMessage());
+            response.setOutput(null);
+            response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage("System error");
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            logger.error("getOrderInfo", e);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("")
+    public ResponseEntity<CommonResponse<OrderModel>> createOrder(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestBody OrderRequest request
+    ) {
+        CommonResponse<OrderModel> response = new CommonResponse<>();
+        try {
+            if (request.getProducts() != null && request.getProducts().isEmpty()) {
+                throw new IllegalArgumentException("List product cannot be empty");
+            }
+            OrderModel orderModel;
             if (userDetails != null) {
                 List<CartItem> cartItems = cartService.getCartItemsByUserId(userDetails.getId());
-                orderService.create(addressInfo, cartItems, userDetails.getId());
-                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-                response.setMessage("create order success");
+                Order order = orderService.create(request.getShippingInfo(), cartItems, userDetails.getId());
+                orderModel = new OrderModel(order);
             } else {
-                response.setStatusCode(Constants.RestApiReturnCode.UNAUTHORIZED);
-                response.setError(Constants.RestApiReturnCode.UNAUTHORIZED_TXT);
-                response.setMessage("Unauthorized");
+                List<CartItem> cartItems = cartItemService.getCartItemFromRequests(request.getProducts());
+                Order order = orderService.createWithoutAuth(request.getShippingInfo(), cartItems);
+                orderModel = new OrderModel(order);
             }
+            response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+            response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+            response.setMessage("create order success");
+            response.setOutput(orderModel);
+        } catch (IllegalArgumentException e) {
+            response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
+            response.setMessage(e.getMessage());
+            response.setOutput(null);
+            response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
             response.setMessage("System error");
@@ -75,5 +122,57 @@ public class OrderController {
             logger.error("createOrder", e);
         }
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("")
+    public CommonResponse<List<OrderModel>> getOrders(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        CommonResponse<List<OrderModel>> response = new CommonResponse<>();
+        try {
+            if (userDetails == null) {
+                response.setStatusCode(Constants.RestApiReturnCode.UNAUTHORIZED);
+                response.setMessage("Unauthorized");
+                response.setError(Constants.RestApiReturnCode.UNAUTHORIZED_TXT);
+            } else {
+                List<OrderModel> orderModels = orderService.getOrderModelsByUserId(userDetails.getId());
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setMessage("create order success");
+                response.setOutput(orderModels);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage("System error");
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            logger.error("createOrder", e);
+        }
+        return response;
+    }
+
+    @GetMapping("/{orderCode}")
+    public CommonResponse<OrderDetail> getOrderDetail(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable String orderCode
+    ) {
+        CommonResponse<OrderDetail> response = new CommonResponse<>();
+        try {
+            OrderDetail orderDetail = orderService.getOrderDetailByOrderCodeAndUserId(orderCode, userDetails.getId());
+            if (orderDetail == null) {
+                response.setStatusCode(Constants.RestApiReturnCode.NOT_FOUND);
+                response.setMessage("Cannot find order");
+                response.setOutput(null);
+                response.setError(Constants.RestApiReturnCode.NOT_FOUND_TXT);
+            } else {
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setMessage("Get order success");
+                response.setOutput(orderDetail);
+            }
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage("System error");
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            logger.error("createOrder", e);
+        }
+        return response;
     }
 }

@@ -1,10 +1,11 @@
 package kidev.vn.onlineshopping.model.authUser;
 
+import kidev.vn.onlineshopping.enums.UserGender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -14,5 +15,6 @@ public class AuthUserRequest {
     private String password;
     private String firstName;
     private String lastName;
-    private Integer gender;
+    private UserGender gender;
+    private Date dateOfBirth;
 }

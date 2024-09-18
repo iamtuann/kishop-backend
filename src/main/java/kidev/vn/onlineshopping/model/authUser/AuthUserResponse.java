@@ -28,6 +28,6 @@ public class AuthUserResponse {
         this.token = token;
         this.roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());;
+                .collect(Collectors.toList());
     }
 }

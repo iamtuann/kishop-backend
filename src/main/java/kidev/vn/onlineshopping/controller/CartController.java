@@ -6,8 +6,8 @@ import kidev.vn.onlineshopping.entity.CartItem;
 import kidev.vn.onlineshopping.entity.ProductDetail;
 import kidev.vn.onlineshopping.model.CommonResponse;
 import kidev.vn.onlineshopping.model.cart.CartItemDetail;
-import kidev.vn.onlineshopping.model.cart.ItemBasic;
 import kidev.vn.onlineshopping.model.cart.CartItemRequest;
+import kidev.vn.onlineshopping.model.cart.ItemBasic;
 import kidev.vn.onlineshopping.service.CartItemService;
 import kidev.vn.onlineshopping.service.CartService;
 import kidev.vn.onlineshopping.service.ProductDetailService;
@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -37,24 +36,15 @@ public class CartController {
     public ResponseEntity<CommonResponse<?>> getCartItems(@RequestBody List<CartItemRequest> requests) {
         CommonResponse<List<CartItemDetail>> response = new CommonResponse<>();
         try {
-            List<CartItemDetail> cartItemDetails = new ArrayList<>();
-            if (!requests.isEmpty()) {
-                for (CartItemRequest item : requests) {
-                    ProductDetail pd = productDetailService.findOne(item.getDetailId());
-                    if (pd != null) {
-                        cartItemDetails.add(new CartItemDetail(pd, item.getQuantity()));
-                    } else {
-                        response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
-                        response.setMessage("Product Detail not exist");
-                        response.setOutput(null);
-                        response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
-                        return ResponseEntity.ok(response);
-                    }
-                }
-                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-                response.setOutput(cartItemDetails);
-            }
+            List<CartItemDetail> cartItemDetails = cartItemService.getDetailsFromCartItemRequest(requests);
+            response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+            response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+            response.setOutput(cartItemDetails);
+        } catch (IllegalArgumentException e) {
+            response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
+            response.setMessage(e.getMessage());
+            response.setOutput(null);
+            response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
             response.setMessage("System error");

@@ -2,6 +2,7 @@ package kidev.vn.onlineshopping.model.cart;
 
 import kidev.vn.onlineshopping.common.Priceable;
 import kidev.vn.onlineshopping.entity.CartItem;
+import kidev.vn.onlineshopping.entity.OrderItem;
 import kidev.vn.onlineshopping.entity.ProductDetail;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -38,5 +39,15 @@ public class ItemBasic implements Priceable {
         this.oldPrice = cartItem.getOldPrice();
         this.totalPrice = this.price * this.quantity;
         this.totalOldPrice = this.oldPrice * this.quantity;
+    }
+
+    public ItemBasic(OrderItem orderItem) {
+        this.id = orderItem.getId();
+        this.detailId = orderItem.getProductDetail().getId();
+        this.quantity = orderItem.getQuantity();
+        this.price = orderItem.getPrice();
+        this.oldPrice = orderItem.getOldPrice();
+        this.totalPrice = orderItem.getTotalPrice();
+        this.totalOldPrice = orderItem.getTotalOldPrice();
     }
 }
