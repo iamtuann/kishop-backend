@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+.env
+*.log
+application-*.properties
+application-*.yml
+!.env.example
+!.application-example.yml
+credentials.json
