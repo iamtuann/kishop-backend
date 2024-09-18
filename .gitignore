@@ -38,5 +38,5 @@ build/
 application-*.properties
 application-*.yml
 !.env.example
-!.application-example.yml
+!application-example.yml
 credentials.json
