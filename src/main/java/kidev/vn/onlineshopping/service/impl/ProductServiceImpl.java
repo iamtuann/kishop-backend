@@ -1,28 +1,42 @@
 package kidev.vn.onlineshopping.service.impl;
 
+import com.github.slugify.Slugify;
 import kidev.vn.onlineshopping.Constants;
+import kidev.vn.onlineshopping.entity.Category;
 import kidev.vn.onlineshopping.entity.Product;
 import kidev.vn.onlineshopping.entity.ProductVariant;
-import kidev.vn.onlineshopping.model.product.ProductBasicModel;
-import kidev.vn.onlineshopping.model.product.ProductModel;
+import kidev.vn.onlineshopping.entity.Size;
+import kidev.vn.onlineshopping.model.product.*;
 import kidev.vn.onlineshopping.repository.ProductRepo;
-import kidev.vn.onlineshopping.repository.ProductVariantRepo;
-import kidev.vn.onlineshopping.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
+import kidev.vn.onlineshopping.service.*;
+import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
-    @Autowired
-    ProductRepo productRepo;
-    @Autowired
-    ProductVariantRepo productVariantRepo;
+
+    private final ProductRepo productRepo;
+
+    private final ProductVariantService productVariantService;
+
+    private final Slugify slg = new Slugify();
+
+    private final BrandService brandService;
+
+    private final CategoryService categoryService;
+
+    private final SizeService sizeService;
+
+    private final ColorService colorService;
 
 
     @Override
@@ -31,7 +45,36 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product saveProduct(Product product) {
+    public Product saveProduct(ProductRequest productRequest) {
+        Product product;
+        if (productRequest.getId() != null) {
+            product = productRepo.getProductById(productRequest.getId());
+        } else {
+            product = new Product();
+            product.setStatus(Constants.StatusProduct.NOTSELL);
+            product.setCreatedDate(new Date());
+        }
+        if (productRequest.getProductVariantId() != null) {
+            product.setProductPreview(productVariantService.findOne(productRequest.getProductVariantId()));
+        }
+        if (productRequest.getStatus() != null) {
+            product.setStatus(productRequest.getStatus());
+        }
+        product.setUpdatedDate(new Date());
+        product.setName(productRequest.getName());
+        product.setSlug(slg.slugify(productRequest.getName()));
+        product.setDescription(productRequest.getDescription());
+        product.setBrand(brandService.findOne(productRequest.getBrandId()));
+        List<Category> categories = new ArrayList<>();
+        for (Long id : productRequest.getCategoryIds()) {
+            categories.add(categoryService.findOne(id));
+        }
+        product.setCategories(categories);
+        List<Size> sizes = new ArrayList<>();
+        for (Long id : productRequest.getSizeIds()) {
+            sizes.add(sizeService.findOne(id));
+        }
+        product.setSizes(sizes);
         return productRepo.save(product);
     }
 
@@ -52,45 +95,26 @@ public class ProductServiceImpl implements ProductService {
                                                  List<String> sizes, List<String> colors, List<String> genders,
                                                  Boolean sale, Pageable pageable) {
 
-//        Page<Product> productPage = productRepo.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
-//        List<ProductBasicModel> productBasicModels = new ArrayList<>();
-//        for (Product product : productPage) {
-//            ProductBasicModel model = new ProductBasicModel(product);
-//            productBasicModels.add(model);
-//        }
         Boolean isFiltering = isFiltering(categories, brandNames, sizes, colors, genders, sale);
-        Page<ProductVariant> productVariants = productVariantRepo.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
+        Page<ProductVariant> productVariants = productVariantService.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
         ArrayList<ProductBasicModel> productBasicModels = new ArrayList<>();
         for (ProductVariant pv : productVariants) {
             ProductBasicModel model = new ProductBasicModel(pv, isFiltering);
             productBasicModels.add(model);
         }
-        PageImpl<ProductBasicModel> response = new PageImpl<>(productBasicModels, pageable, productVariants.getTotalElements());
-        return response;
+        return new PageImpl<>(productBasicModels, pageable, productVariants.getTotalElements());
     }
 
     @Override
     public ProductModel getProductSellingBySlug(String slug) {
         Product product = productRepo.getProductBySlugAndStatus(slug, Constants.StatusProduct.SELLING);
         if (product != null) {
-            ProductModel productModel = new ProductModel(product);
-            return productModel;
+            return new ProductModel(product);
         } else {
             return null;
         }
     }
 
-    @Override
-    public List<ProductBasicModel> getTopProductByCreatedDate(Pageable pageable) {
-        Page<Product> products = productRepo.getTopProductByCreatedDate(pageable);
-        List<ProductBasicModel> productBasicModels = new ArrayList<>();
-        if (products != null || products.getSize() != 0) {
-            for (Product p : products) {
-                productBasicModels.add(new ProductBasicModel(p));
-            }
-        }
-        return productBasicModels;
-    }
 
     @Override
     public void create(Product product) {
@@ -98,8 +122,24 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public void update(Product product) {
-        productRepo.save(product);
+    public Product update(Product product, ProductVariantRequest variantRequest) throws IOException {
+        for (ProductVariantRequestModel model : variantRequest.getModels()) {
+            productVariantService.saveProductVariant(model, product);
+        }
+        product.setColors(colorService.getColorsByColorNames(variantRequest.getListColor()));
+        return productRepo.save(product);
+    }
+
+    @Override
+    public void update(List<ProductDetailRequest> detailRequests) {
+        for (ProductDetailRequest detail : detailRequests) {
+            productVariantService.update(detail);
+        }
+    }
+
+    @Override
+    public Product update(Product product) {
+        return productRepo.save(product);
     }
 
     @Override

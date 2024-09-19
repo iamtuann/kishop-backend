@@ -7,6 +7,8 @@ import java.util.List;
 public interface ColorService {
     Color findOne(Long id);
 
+    List<Color> getColorsByColorNames(List<String> colorNames);
+
     void create(Color product);
 
     void update(Color product);

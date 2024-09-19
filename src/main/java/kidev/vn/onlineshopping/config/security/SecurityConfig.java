@@ -3,7 +3,7 @@ package kidev.vn.onlineshopping.config.security;
 import kidev.vn.onlineshopping.config.security.jwt.AuthEntryPointJwt;
 import kidev.vn.onlineshopping.config.security.jwt.AuthTokenFilter;
 import kidev.vn.onlineshopping.config.security.service.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,16 +24,16 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.Collections;
 
+@AllArgsConstructor
 @Configuration
 @CrossOrigin
 @EnableGlobalMethodSecurity (
         prePostEnabled = true)
 public class SecurityConfig {
-    @Autowired
-    UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
+    private final UserDetailsServiceImpl userDetailsService;
+
+    private final AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -81,11 +81,11 @@ public class SecurityConfig {
         http.cors().configurationSource(this.corsConfigurationSource()).and().csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and()
-                // Set session management to stateless
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                // Set permissions on endpoints
-                .authorizeRequests().antMatchers("/api/auth/**").permitAll()
+                .authorizeRequests()
+                .antMatchers("/api/upload/**").hasAnyAuthority("ADMIN")
+                .antMatchers("/api/addresses/**", "/api/auth/profile").authenticated()
                 .antMatchers("/api/**").permitAll()
                 .anyRequest().permitAll();
 
