@@ -15,14 +15,14 @@ public interface ProductService {
 
     Page<ProductBasicModel> searchProduct(String name,
                                           List<String> categories, List<String> brandNames,
-                                          List<String> sizes, List<String> colors, List<String> genders,
+                                          List<String> colors, List<String> genders,
                                           Boolean sale, Pageable pageable);
 
     ProductModel getProductSellingBySlug(String slug);
 
     void create(Product product);
 
-    Product update(Product product, ProductVariantRequest variantRequest) throws IOException;
+    Product update(Product product, List<ProductVariantRequest> variantRequests) throws IOException;
 
     void update(List<ProductDetailRequest> detailRequests);
 

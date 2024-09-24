@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -25,10 +26,6 @@ public class ProductVariant {
 
     @Column(name = "name")
     private String name;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "color_id")
-    private Color color;
 
     @Column(name = "price")
     private Long price;
@@ -50,4 +47,15 @@ public class ProductVariant {
 
     @Column(name = "image_path")
     private String imagePath;
+
+    @ManyToMany
+    @JoinTable(
+            name = "product_variant_color",
+            joinColumns = {@JoinColumn(name = "product_variant_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "color_id", referencedColumnName = "id")})
+    private List<Color> colors;
+
+    public List<String> getNameColors() {
+        return this.colors.stream().map(Color::getName).collect(Collectors.toList());
+    }
 }

@@ -6,8 +6,9 @@ import kidev.vn.onlineshopping.entity.ProductImage;
 import kidev.vn.onlineshopping.entity.ProductVariant;
 import kidev.vn.onlineshopping.model.product.ProductDetailRequest;
 import kidev.vn.onlineshopping.model.product.ProductDetailRequestModel;
-import kidev.vn.onlineshopping.model.product.ProductVariantRequestModel;
+import kidev.vn.onlineshopping.model.product.ProductVariantRequest;
 import kidev.vn.onlineshopping.repository.ProductVariantRepo;
+import kidev.vn.onlineshopping.service.ColorService;
 import kidev.vn.onlineshopping.service.ProductDetailService;
 import kidev.vn.onlineshopping.service.ProductImageService;
 import kidev.vn.onlineshopping.service.ProductVariantService;
@@ -32,6 +33,8 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
     private final ProductDetailService productDetailService;
 
+    private final ColorService colorService;
+
     public final String PRODUCT_IMAGE_FOLDER = "products/images";
 
     @Override
@@ -40,12 +43,12 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     }
 
     @Override
-    public Page<ProductVariant> searchProduct(String name, List<String> categories, List<String> brandNames, List<String> sizes, List<String> colors, List<String> genders, Boolean sale, Pageable pageable) {
-        return productVariantRepo.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
+    public Page<ProductVariant> searchProduct(String name, List<String> categories, List<String> brandNames, List<String> colors, List<String> genders, Boolean sale, Pageable pageable) {
+        return productVariantRepo.searchProduct(name, categories, brandNames, colors, genders, sale, pageable);
     }
 
     @Override
-    public void saveProductVariant(ProductVariantRequestModel model, Product product) throws IOException {
+    public void saveProductVariant(ProductVariantRequest model, Product product) throws IOException {
         ProductVariant pv;
         if (model.getId() != null) {
             pv = productVariantRepo.getProductVariantById(model.getId());
@@ -66,6 +69,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         pv.setImagePath(PRODUCT_IMAGE_FOLDER + "/" + data.get("display_name"));
         pv = productVariantRepo.save(pv);
 
+        pv.setColors(colorService.getColorsByIds(model.getColorIds()));
         List<ProductImage> productImages = productImageService.saveAll(pv, model.getImages());
         pv.setProductImages(productImages);
         productVariantRepo.save(pv);

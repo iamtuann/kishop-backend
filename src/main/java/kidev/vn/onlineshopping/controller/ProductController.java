@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,44 +36,49 @@ public class ProductController {
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public CommonResponse<ProductResponse> saveProduct(@RequestBody ProductRequest request) {
-        CommonResponse<ProductResponse> response= new CommonResponse<>();
+    @Transactional
+    public CommonResponse<ProductRequest> saveProduct(@RequestBody ProductRequest request) {
+        CommonResponse<ProductRequest> response = new CommonResponse<>();
         try {
             Product product = productService.saveProduct(request);
-            ProductResponse output = new ProductResponse(product.getId(), request.getSizeIds());
+            ProductRequest output = new ProductRequest(product);
 
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-            response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
+            response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(output);
         } catch (Exception e) {
             logger.error("save product", e);
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
-            response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
             response.setOutput(null);
-            response.setError("Lỗi máy chủ");
+            response.setMessage("Lỗi máy chủ");
         }
         return response;
     }
 
-    @PostMapping(value = "/save-variant", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{productId}/save-variant", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public CommonResponse<List<ProductVariantResponse>> saveProductVariant(@ModelAttribute ProductVariantRequest request) {
+    @Transactional
+    public CommonResponse<List<ProductVariantResponse>> saveProductVariant(
+            @PathVariable Long productId,
+            @ModelAttribute ProductVariantRequestList request
+    ) {
         CommonResponse<List<ProductVariantResponse>> response= new CommonResponse<>();
         try {
-            Product product = productService.findOne(request.getProductId());
-            product = productService.update(product, request);
+            Product product = productService.findOne(productId);
+            product = productService.update(product, request.getModels());
             List<ProductVariantResponse> output = product.getProductVariants().stream()
                     .map(ProductVariantResponse::new)
                     .collect(Collectors.toList());
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-            response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
+            response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(output);
         } catch (Exception e) {
             logger.error("save product variant", e);
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
-            response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
             response.setOutput(null);
-            response.setError("Lỗi máy chủ");
+            response.setMessage("Lỗi máy chủ");
         }
         return response;
     }
@@ -84,13 +90,13 @@ public class ProductController {
         try {
             productService.update(request);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-            response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
+            response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(null);
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
-            response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
             response.setOutput(null);
-            response.setError("Có lỗi xảy ra");
+            response.setMessage("Có lỗi xảy ra");
             logger.error("save prod quantity", e);
         }
         return response;
@@ -109,23 +115,23 @@ public class ProductController {
             if (variantId == null) {
                 product.setProductPreview(product.getProductVariants().get(0));
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-                response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
             } else if (Objects.equals(productVariant.getProduct().getId(), productId)) {
                 product.setProductPreview(productVariant);
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
-                response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
             } else {
                 response.setStatusCode(Constants.RestApiReturnCode.BAD_REQUEST);
-                response.setMessage(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
-                response.setError("ProductVariant không thuộc product");
+                response.setError(Constants.RestApiReturnCode.BAD_REQUEST_TXT);
+                response.setMessage("ProductVariant không thuộc product");
             }
             productService.update(product);
             response.setOutput(null);
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
-            response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
             response.setOutput(null);
-            response.setError("Có lỗi xảy ra");
+            response.setMessage("Có lỗi xảy ra");
             logger.error("create product", e);
         }
         return response;
@@ -135,7 +141,6 @@ public class ProductController {
     public CommonResponse<Page<ProductBasicModel>> searchProduct(@RequestParam(value = "name", required = false) String name,
                                            @RequestParam(value = "categories", required = false) List<String> categories,
                                            @RequestParam(value = "brandNames", required = false) List<String> brandNames,
-                                           @RequestParam(value = "sizes", required = false) List<String> sizes,
                                            @RequestParam(value = "colors", required = false) List<String> colors,
                                            @RequestParam(value = "genders", required = false) List<String> genders,
                                            @RequestParam(value = "sale", required = false) Boolean sale,
@@ -157,7 +162,7 @@ public class ProductController {
                 sort = Sort.unsorted().ascending();
             }
             pageable = PageRequest.of(page - 1, pageSize, sort);
-            Page<ProductBasicModel> model = productService.searchProduct(name, categories, brandNames, sizes, colors,genders, sale, pageable);
+            Page<ProductBasicModel> model = productService.searchProduct(name, categories, brandNames, colors, genders, sale, pageable);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(model);

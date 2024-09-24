@@ -7,15 +7,13 @@ import java.util.List;
 public interface ColorService {
     Color findOne(Long id);
 
-    List<Color> getColorsByColorNames(List<String> colorNames);
+    List<Color> getColorsByIds(List<Long> ids);
 
     void create(Color product);
 
     void update(Color product);
 
     void delete(Color product);
-
-    Color getColorByEngName(String engName);
 
     List<Color> findAll();
 }

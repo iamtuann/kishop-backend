@@ -3,9 +3,9 @@ package kidev.vn.onlineshopping.service.impl;
 import com.github.slugify.Slugify;
 import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.entity.Category;
+import kidev.vn.onlineshopping.entity.Gender;
 import kidev.vn.onlineshopping.entity.Product;
 import kidev.vn.onlineshopping.entity.ProductVariant;
-import kidev.vn.onlineshopping.entity.Size;
 import kidev.vn.onlineshopping.model.product.*;
 import kidev.vn.onlineshopping.repository.ProductRepo;
 import kidev.vn.onlineshopping.service.*;
@@ -34,9 +34,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final CategoryService categoryService;
 
-    private final SizeService sizeService;
-
-    private final ColorService colorService;
+    private final GenderService genderService;
 
 
     @Override
@@ -70,20 +68,16 @@ public class ProductServiceImpl implements ProductService {
             categories.add(categoryService.findOne(id));
         }
         product.setCategories(categories);
-        List<Size> sizes = new ArrayList<>();
-        for (Long id : productRequest.getSizeIds()) {
-            sizes.add(sizeService.findOne(id));
-        }
-        product.setSizes(sizes);
+        List<Gender> genders = genderService.getGendersByListId(productRequest.getGenderIds());
+        product.setGender(genders);
         return productRepo.save(product);
     }
 
     private Boolean isFiltering(List<String> categories, List<String> brandNames,
-                                List<String> sizes, List<String> colors,
+                                List<String> colors,
                                 List<String> genders, Boolean sale) {
         return categories != null && !categories.isEmpty() ||
                 brandNames != null && !brandNames.isEmpty() ||
-                sizes != null && !sizes.isEmpty() ||
                 colors != null && !colors.isEmpty() ||
                 genders != null && !genders.isEmpty() ||
                 sale != null && sale;
@@ -92,11 +86,11 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<ProductBasicModel> searchProduct(String name,
                                                  List<String> categories, List<String> brandNames,
-                                                 List<String> sizes, List<String> colors, List<String> genders,
+                                                 List<String> colors, List<String> genders,
                                                  Boolean sale, Pageable pageable) {
 
-        Boolean isFiltering = isFiltering(categories, brandNames, sizes, colors, genders, sale);
-        Page<ProductVariant> productVariants = productVariantService.searchProduct(name, categories, brandNames, sizes, colors, genders, sale, pageable);
+        Boolean isFiltering = isFiltering(categories, brandNames, colors, genders, sale);
+        Page<ProductVariant> productVariants = productVariantService.searchProduct(name, categories, brandNames, colors, genders, sale, pageable);
         ArrayList<ProductBasicModel> productBasicModels = new ArrayList<>();
         for (ProductVariant pv : productVariants) {
             ProductBasicModel model = new ProductBasicModel(pv, isFiltering);
@@ -122,11 +116,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product update(Product product, ProductVariantRequest variantRequest) throws IOException {
-        for (ProductVariantRequestModel model : variantRequest.getModels()) {
-            productVariantService.saveProductVariant(model, product);
+    public Product update(Product product, List<ProductVariantRequest> variantRequests) throws IOException {
+        for (ProductVariantRequest variantRequest : variantRequests) {
+            productVariantService.saveProductVariant(variantRequest, product);
         }
-        product.setColors(colorService.getColorsByColorNames(variantRequest.getListColor()));
         return productRepo.save(product);
     }
 

@@ -20,6 +20,6 @@ public class ProductVariantResponse {
         this.name = productVariant.getName();
         this.price = productVariant.getPrice();
         this.oldPrice = productVariant.getOldPrice();
-        this.thumbnail = productVariant.getProductImages().get(0).getUrl();
+        this.thumbnail = productVariant.getImageUrl();
     }
 }

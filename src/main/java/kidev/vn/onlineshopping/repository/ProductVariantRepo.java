@@ -40,19 +40,17 @@ public interface ProductVariantRepo extends JpaRepository<ProductVariant, Long> 
             "select DISTINCT pv.*, p.created_date as createdDate, pd.sold as sold, " +
             "ROW_NUMBER() OVER (PARTITION BY pv.product_id ORDER BY pv.id) as row_num " +
             "from product_variant pv " +
-            "inner join color c on pv.color_id = c.id " +
+            "inner join product_variant_color pvc on pvc.product_variant_id = pv.id " +
+            "inner join color c on pvc.color_id = c.id " +
             "inner join product p on p.id = pv.product_id " +
             "inner join brand b on p.brand_id = b.id " +
             "inner join product_category pct on pct.product_id = p.id " +
             "inner join category ct on pct.category_id = ct.id " +
             "inner join product_gender pg on pg.product_id = p.id " +
             "inner join gender g on g.id = pg.gender_id " +
-            "inner join product_size ps on ps.product_id = p.id " +
-            "inner join size s on s.id = ps.size_id " +
             "inner join product_detail pd on pv.id = pd.product_variant_id " +
             "WHERE (:name IS NULL OR :name = '' OR p.name LIKE CONCAT('%', :name, '%')) " +
             "AND (coalesce(:brandNames, null) IS NULL OR b.name IN (:brandNames)) " +
-            "AND (coalesce(:sizes, null) IS NULL OR s.name IN (:sizes)) " +
             "AND (coalesce(:colors, null) IS NULL OR c.eng_name IN (:colors)) " +
             "AND (coalesce(:categories, null) IS NULL OR ct.slug IN (:categories)) " +
             "AND (coalesce(:genders, null) IS NULL OR g.name IN (:genders)) " +
@@ -63,7 +61,6 @@ public interface ProductVariantRepo extends JpaRepository<ProductVariant, Long> 
     Page<ProductVariant> searchProduct(@Param(value = "name") String name,
                                        @Param(value = "categories") List<String> categories,
                                        @Param(value = "brandNames") List<String> brandNames,
-                                       @Param(value = "sizes") List<String> sizes,
                                        @Param(value = "colors") List<String> colors,
                                        @Param(value = "genders") List<String> genders,
                                        Boolean sale, Pageable pageable);

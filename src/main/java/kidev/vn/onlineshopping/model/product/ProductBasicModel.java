@@ -5,6 +5,7 @@ import kidev.vn.onlineshopping.entity.ProductVariant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -20,7 +21,7 @@ public class ProductBasicModel {
     private Long price;
     private Long oldPrice;
     private String thumbnail;
-    private String color;
+    private List<String> colors;
 
     public ProductBasicModel(Product p) {
         this.id = p.getId();
@@ -50,7 +51,7 @@ public class ProductBasicModel {
         this.price = isFiltering ? pv.getPrice() : productPreview.getPrice();
         this.oldPrice = isFiltering ? pv.getOldPrice() : productPreview.getOldPrice();
         this.thumbnail = isFiltering ? pv.getProductImages().get(0).getUrl() : productPreview.getProductImages().get(0).getUrl();
-        this.color = isFiltering ? pv.getColor().getName() : productPreview.getColor().getName();
+        this.colors = isFiltering ? pv.getNameColors() : productPreview.getNameColors();
     }
     @Override
     public boolean equals(Object o) {
