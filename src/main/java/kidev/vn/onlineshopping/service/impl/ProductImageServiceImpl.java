@@ -34,8 +34,8 @@ public class ProductImageServiceImpl implements ProductImageService {
         for (MultipartFile image : files) {
             ProductImage productImage = new ProductImage();
             Map data = cloudinaryService.uploadFile(image, PRODUCT_IMAGE_FOLDER);
-            productImage.setUrl((String) data.get("url"));
-            productImage.setPathUrl(PRODUCT_IMAGE_FOLDER + "/" + data.get("display_name"));
+//            productImage.setUrl((String) data.get("url"));
+//            productImage.setPathUrl(PRODUCT_IMAGE_FOLDER + "/" + data.get("display_name"));
             productImage.setProductVariant(productVariant);
             productImages.add(productImage);
         }

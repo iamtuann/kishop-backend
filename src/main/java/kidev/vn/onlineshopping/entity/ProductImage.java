@@ -20,9 +20,7 @@ public class ProductImage {
     @JoinColumn(name = "product_variant_id")
     private ProductVariant productVariant;
 
-    @Column(name = "url")
-    private String url;
-
-    @Column(name = "path_url")
-    private String pathUrl;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "media_id", referencedColumnName = "id")
+    private Media media;
 }

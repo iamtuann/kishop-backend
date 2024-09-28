@@ -33,7 +33,7 @@ public class ProductBasicModel {
         this.description = p.getDescription();
         this.price = p.getProductPreview().getPrice();
         this.oldPrice = p.getProductPreview().getOldPrice();
-        this.thumbnail = p.getProductPreview().getProductImages().get(0).getUrl();
+//        this.thumbnail = p.getProductPreview().getProductImages().get(0).getUrl();
     }
     public ProductBasicModel(ProductVariant pv) {
         this(pv, false);
@@ -50,7 +50,7 @@ public class ProductBasicModel {
         this.description = product.getDescription();
         this.price = isFiltering ? pv.getPrice() : productPreview.getPrice();
         this.oldPrice = isFiltering ? pv.getOldPrice() : productPreview.getOldPrice();
-        this.thumbnail = isFiltering ? pv.getProductImages().get(0).getUrl() : productPreview.getProductImages().get(0).getUrl();
+//        this.thumbnail = isFiltering ? pv.getProductImages().get(0).getUrl() : productPreview.getProductImages().get(0).getUrl();
         this.colors = isFiltering ? pv.getNameColors() : productPreview.getNameColors();
     }
     @Override

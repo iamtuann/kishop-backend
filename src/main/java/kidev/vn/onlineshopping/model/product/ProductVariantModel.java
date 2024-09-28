@@ -2,7 +2,6 @@ package kidev.vn.onlineshopping.model.product;
 
 import kidev.vn.onlineshopping.entity.Color;
 import kidev.vn.onlineshopping.entity.ProductDetail;
-import kidev.vn.onlineshopping.entity.ProductImage;
 import kidev.vn.onlineshopping.entity.ProductVariant;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,9 +34,9 @@ public class ProductVariantModel {
         this.status = p.getStatus();
         this.previewImage = p.getImageUrl();
         this.imageUrls = new ArrayList<>();
-        for (ProductImage image : p.getProductImages()) {
-            this.imageUrls.add(image.getUrl());
-        }
+//        for (ProductImage image : p.getProductImages()) {
+//            this.imageUrls.add(image.getUrl());
+//        }
         this.productDetails = new ArrayList<>();
         for (ProductDetail pq : p.getProductDetails()) {
             this.productDetails.add(new ProductDetailModel(pq));

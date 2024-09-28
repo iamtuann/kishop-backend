@@ -124,8 +124,8 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("")
-    public CommonResponse<List<OrderModel>> getOrders(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    @GetMapping("/user")
+    public CommonResponse<List<OrderModel>> getOrdersUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         CommonResponse<List<OrderModel>> response = new CommonResponse<>();
         try {
             if (userDetails == null) {
@@ -148,7 +148,7 @@ public class OrderController {
         return response;
     }
 
-    @GetMapping("/{orderCode}")
+    @GetMapping("/{orderCode}/detail")
     public CommonResponse<OrderDetail> getOrderDetail(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable String orderCode
