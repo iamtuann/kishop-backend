@@ -6,7 +6,8 @@ import kidev.vn.onlineshopping.entity.Category;
 import kidev.vn.onlineshopping.entity.Gender;
 import kidev.vn.onlineshopping.entity.Product;
 import kidev.vn.onlineshopping.entity.ProductVariant;
-import kidev.vn.onlineshopping.model.product.*;
+import kidev.vn.onlineshopping.model.product.ProductBasicModel;
+import kidev.vn.onlineshopping.model.product.ProductRequest;
 import kidev.vn.onlineshopping.repository.ProductRepo;
 import kidev.vn.onlineshopping.service.*;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +43,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product saveProduct(ProductRequest productRequest) {
+    public void saveProduct(ProductRequest productRequest) {
         Product product;
         if (productRequest.getId() != null) {
             product = productRepo.getProductById(productRequest.getId());
@@ -70,7 +70,7 @@ public class ProductServiceImpl implements ProductService {
         product.setCategories(categories);
         List<Gender> genders = genderService.getGendersByListId(productRequest.getGenderIds());
         product.setGender(genders);
-        return productRepo.save(product);
+        productRepo.save(product);
     }
 
     private Boolean isFiltering(List<String> categories, List<String> brandNames,
@@ -100,34 +100,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductModel getProductSellingBySlug(String slug) {
-        Product product = productRepo.getProductBySlugAndStatus(slug, Constants.StatusProduct.SELLING);
-        if (product != null) {
-            return new ProductModel(product);
-        } else {
-            return null;
-        }
+    public Product getProductSellingBySlug(String slug) {
+        return productRepo.getProductBySlugAndStatus(slug, Constants.StatusProduct.SELLING);
     }
-
 
     @Override
     public void create(Product product) {
         productRepo.save(product);
-    }
-
-    @Override
-    public Product update(Product product, List<ProductVariantRequest> variantRequests) throws IOException {
-        for (ProductVariantRequest variantRequest : variantRequests) {
-            productVariantService.saveProductVariant(variantRequest, product);
-        }
-        return productRepo.save(product);
-    }
-
-    @Override
-    public void update(List<ProductDetailRequest> detailRequests) {
-        for (ProductDetailRequest detail : detailRequests) {
-            productVariantService.update(detail);
-        }
     }
 
     @Override

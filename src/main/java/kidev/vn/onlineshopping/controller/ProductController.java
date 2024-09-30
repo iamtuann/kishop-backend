@@ -4,7 +4,12 @@ import kidev.vn.onlineshopping.Constants;
 import kidev.vn.onlineshopping.entity.Product;
 import kidev.vn.onlineshopping.entity.ProductVariant;
 import kidev.vn.onlineshopping.model.CommonResponse;
-import kidev.vn.onlineshopping.model.product.*;
+import kidev.vn.onlineshopping.model.product.ProductBasicModel;
+import kidev.vn.onlineshopping.model.product.ProductModel;
+import kidev.vn.onlineshopping.model.product.ProductRequest;
+import kidev.vn.onlineshopping.model.productDetail.ProductDetailRequest;
+import kidev.vn.onlineshopping.model.productVariant.ProductVariantRequest;
+import kidev.vn.onlineshopping.service.ProductDetailService;
 import kidev.vn.onlineshopping.service.ProductService;
 import kidev.vn.onlineshopping.service.ProductVariantService;
 import lombok.AllArgsConstructor;
@@ -14,14 +19,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/products")
@@ -33,19 +36,18 @@ public class ProductController {
 
     private final ProductVariantService productVariantService;
 
+    private final ProductDetailService productDetailService;
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Transactional
-    public CommonResponse<ProductRequest> saveProduct(@RequestBody ProductRequest request) {
-        CommonResponse<ProductRequest> response = new CommonResponse<>();
+    public CommonResponse<?> saveProduct(@RequestBody ProductRequest request) {
+        CommonResponse<?> response = new CommonResponse<>();
         try {
-            Product product = productService.saveProduct(request);
-            ProductRequest output = new ProductRequest(product);
+            productService.saveProduct(request);
 
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setOutput(output);
         } catch (Exception e) {
             logger.error("save product", e);
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
@@ -56,23 +58,20 @@ public class ProductController {
         return response;
     }
 
-    @PostMapping(value = "/{productId}/save-variant", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/save-variant")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     @Transactional
-    public CommonResponse<List<ProductVariantResponse>> saveProductVariant(
-            @PathVariable Long productId,
-            @ModelAttribute ProductVariantRequestList request
+    public CommonResponse<?> saveProductVariant(
+            @RequestParam Long productId,
+            @RequestBody ProductVariantRequest request
     ) {
-        CommonResponse<List<ProductVariantResponse>> response= new CommonResponse<>();
+        CommonResponse<?> response = new CommonResponse<>();
         try {
             Product product = productService.findOne(productId);
-            product = productService.update(product, request.getModels());
-            List<ProductVariantResponse> output = product.getProductVariants().stream()
-                    .map(ProductVariantResponse::new)
-                    .collect(Collectors.toList());
+            productVariantService.saveProductVariant(request, product);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setOutput(output);
+            response.setMessage("create product variant success");
         } catch (Exception e) {
             logger.error("save product variant", e);
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
@@ -85,10 +84,13 @@ public class ProductController {
 
     @PostMapping("save-detail")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public CommonResponse<?> saveProductDetail(@RequestBody List<ProductDetailRequest> request) {
+    public CommonResponse<?> saveProductDetail(
+            @RequestParam Long productVariantId,
+            @RequestBody ProductDetailRequest request) {
         CommonResponse<?> response = new CommonResponse<>();
         try {
-            productService.update(request);
+            ProductVariant productVariant = productVariantService.findOne(productVariantId);
+            productDetailService.save(productVariant, request);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
             response.setOutput(null);
@@ -177,25 +179,23 @@ public class ProductController {
     }
 
     @GetMapping("/{slug}")
-    public CommonResponse<?> getProductBySlug(@PathVariable("slug") String slug) {
+    public CommonResponse<ProductModel> getProductBySlug(@PathVariable("slug") String slug) {
         CommonResponse<ProductModel> response = new CommonResponse<>();
         try {
-            ProductModel productModel = productService.getProductSellingBySlug(slug);
-            if (productModel != null) {
+            Product product = productService.getProductSellingBySlug(slug);
+            if (product != null) {
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setMessage(Constants.RestApiReturnCode.SUCCESS_TXT);
                 response.setError("Thành công");
-                response.setOutput(productModel);
+                response.setOutput(new ProductModel(product));
             } else {
                 response.setStatusCode(Constants.RestApiReturnCode.NOT_FOUND);
-                response.setMessage(Constants.RestApiReturnCode.NOT_FOUND_TXT);
-                response.setError("Không tìm thấy sp");
-                response.setOutput(null);
+                response.setError(Constants.RestApiReturnCode.NOT_FOUND_TXT);
+                response.setMessage("Không tìm thấy sp");
             }
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
             response.setMessage(Constants.RestApiReturnCode.SYS_ERROR_TXT);
-            response.setOutput(null);
             response.setError("Có lỗi xảy ra");
             logger.error("Get product variant", e);
         }

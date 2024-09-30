@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class FolderModel {
     private Long id;
-    private Long parent_folder_id;
+    private Long parentFolderId;
     private String name;
     private Date createdDate;
     private Date updatedDate;
@@ -24,7 +24,7 @@ public class FolderModel {
 
     public FolderModel(Folder folder) {
         this.id = folder.getId();
-        this.parent_folder_id = folder.getParentFolder() == null ? null : folder.getParentFolder().getId();
+        this.parentFolderId = folder.getParentFolder() == null ? null : folder.getParentFolder().getId();
         this.name = folder.getName();
         this.createdDate = folder.getCreatedDate();
         this.updatedDate = folder.getUpdatedDate();

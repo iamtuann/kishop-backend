@@ -33,8 +33,13 @@ public class ProductVariant {
     @Column(name = "status")
     private Integer status;
 
-    @OneToMany(mappedBy = "productVariant",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<ProductImage> productImages;
+    @ManyToMany
+    @JoinTable(
+            name = "product_variant_media",
+            joinColumns = {@JoinColumn(name = "product_variant_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "media_id", referencedColumnName = "id")})
+    private List<Media> productVariantMedia;
+
 
     @OneToMany(mappedBy = "productVariant",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<ProductDetail> productDetails;
@@ -42,11 +47,9 @@ public class ProductVariant {
     @Column(name = "old_price")
     private Long oldPrice;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
-    @Column(name = "image_path")
-    private String imagePath;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "media_preview_id", referencedColumnName = "id")
+    private Media imagePreview;
 
     @ManyToMany
     @JoinTable(

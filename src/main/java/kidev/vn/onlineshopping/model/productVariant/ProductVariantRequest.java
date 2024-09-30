@@ -1,7 +1,6 @@
-package kidev.vn.onlineshopping.model.product;
+package kidev.vn.onlineshopping.model.productVariant;
 
 import lombok.Data;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -12,7 +11,7 @@ public class ProductVariantRequest {
     private Long price;
     private Long oldPrice;
     private Integer status;
-    private MultipartFile[] images;
-    private MultipartFile previewImage;
+    private List<Long> mediaIds;
+    private Long previewMediaId;
     private List<Long> colorIds;
 }

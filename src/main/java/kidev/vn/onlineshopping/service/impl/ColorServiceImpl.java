@@ -6,7 +6,6 @@ import kidev.vn.onlineshopping.service.ColorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,12 +21,7 @@ public class ColorServiceImpl implements ColorService {
 
     @Override
     public List<Color> getColorsByIds(List<Long> ids) {
-        List<Color> colors = new ArrayList<>();
-        for (Long id : ids) {
-            Color color = colorRepo.getColorById(id);
-            colors.add(color);
-        }
-        return colors;
+        return colorRepo.findAllById(ids);
     }
 
     @Override

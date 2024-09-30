@@ -37,9 +37,9 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public FolderModel create(FolderModel folderModel) {
-        Folder parentFolder = folderModel.getParent_folder_id() == null
+        Folder parentFolder = folderModel.getParentFolderId() == null
                 ? null
-                : folderRepo.getFolderById(folderModel.getParent_folder_id());
+                : folderRepo.getFolderById(folderModel.getParentFolderId());
         Folder folder = new Folder(folderModel.getName(), parentFolder);
         folder = folderRepo.save(folder);
         return new FolderModel(folder);

@@ -37,7 +37,7 @@ public class ItemDetail extends ItemBasic {
         this.colors = pd.getProductVariant().getNameColors();
         this.size = pd.getSize().getName();
         this.brand = product.getBrand().getName();
-        this.thumbnail = pd.getProductVariant().getImageUrl();
+        this.thumbnail = pd.getProductVariant().getImagePreview().getUrl();
     }
 
     public ItemDetail(CartItem cartItem) {
@@ -51,7 +51,7 @@ public class ItemDetail extends ItemBasic {
         this.colors = cartItem.getProductVariant().getNameColors();
         this.size = cartItem.getProductDetail().getSize().getName();
         this.brand = product.getBrand().getName();
-        this.thumbnail = cartItem.getProductVariant().getImageUrl();
+        this.thumbnail = cartItem.getProductVariant().getImagePreview().getUrl();
     }
 
     public ItemDetail(OrderItem orderItem) {
@@ -65,6 +65,6 @@ public class ItemDetail extends ItemBasic {
         this.colors = orderItem.getProductVariant().getNameColors();
         this.size = orderItem.getProductDetail().getSize().getName();
         this.brand = product.getBrand().getName();
-        this.thumbnail = orderItem.getProductVariant().getImageUrl();
+        this.thumbnail = orderItem.getProductVariant().getImagePreview().getUrl();
     }
 }

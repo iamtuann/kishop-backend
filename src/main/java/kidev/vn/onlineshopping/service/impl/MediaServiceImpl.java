@@ -25,8 +25,13 @@ public class MediaServiceImpl implements MediaService {
     private final CloudinaryService cloudinaryService;
 
     @Override
-    public MediaModel getMediaById(Long id) {
-        return new MediaModel(mediaRepo.getMediaById(id));
+    public Media getMediaById(Long id) {
+        return mediaRepo.getMediaById(id);
+    }
+
+    @Override
+    public List<Media> findAllByIds(List<Long> ids) {
+        return mediaRepo.findAllById(ids);
     }
 
     @Override

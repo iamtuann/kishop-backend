@@ -2,7 +2,7 @@ package kidev.vn.onlineshopping.service.impl;
 
 import kidev.vn.onlineshopping.entity.ProductDetail;
 import kidev.vn.onlineshopping.entity.ProductVariant;
-import kidev.vn.onlineshopping.model.product.ProductDetailRequestModel;
+import kidev.vn.onlineshopping.model.productDetail.ProductDetailRequest;
 import kidev.vn.onlineshopping.repository.ProductDetailRepo;
 import kidev.vn.onlineshopping.service.ProductDetailService;
 import kidev.vn.onlineshopping.service.SizeService;
@@ -29,14 +29,14 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     }
 
     @Override
-    public ProductDetail update(ProductVariant productVariant, ProductDetailRequestModel detailRequestModel) {
+    public ProductDetail save(ProductVariant productVariant, ProductDetailRequest detailRequestModel) {
         ProductDetail productDetail;
         if (detailRequestModel.getId() != null) {
             productDetail = productDetailRepo.getProductDetailById(detailRequestModel.getId());
         } else {
             productDetail = new ProductDetail();
-            productDetail.setProductVariant(productVariant);
         }
+        productDetail.setProductVariant(productVariant);
         productDetail.setSize(sizeService.findOne(detailRequestModel.getSizeId()));
         productDetail.setQuantity(detailRequestModel.getQuantity());
         return productDetailRepo.save(productDetail);

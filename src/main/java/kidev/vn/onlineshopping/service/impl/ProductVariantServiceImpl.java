@@ -1,25 +1,19 @@
 package kidev.vn.onlineshopping.service.impl;
 
-import kidev.vn.onlineshopping.config.cloud.CloudinaryService;
 import kidev.vn.onlineshopping.entity.Product;
-import kidev.vn.onlineshopping.entity.ProductImage;
 import kidev.vn.onlineshopping.entity.ProductVariant;
-import kidev.vn.onlineshopping.model.product.ProductDetailRequest;
-import kidev.vn.onlineshopping.model.product.ProductDetailRequestModel;
-import kidev.vn.onlineshopping.model.product.ProductVariantRequest;
+import kidev.vn.onlineshopping.model.productVariant.ProductVariantRequest;
 import kidev.vn.onlineshopping.repository.ProductVariantRepo;
 import kidev.vn.onlineshopping.service.ColorService;
+import kidev.vn.onlineshopping.service.MediaService;
 import kidev.vn.onlineshopping.service.ProductDetailService;
-import kidev.vn.onlineshopping.service.ProductImageService;
 import kidev.vn.onlineshopping.service.ProductVariantService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @AllArgsConstructor
@@ -27,9 +21,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
 
     private final ProductVariantRepo productVariantRepo;
 
-    private final CloudinaryService cloudinaryService;
-
-    private final ProductImageService productImageService;
+    private final MediaService mediaService;
 
     private final ProductDetailService productDetailService;
 
@@ -48,7 +40,7 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     }
 
     @Override
-    public void saveProductVariant(ProductVariantRequest model, Product product) throws IOException {
+    public void saveProductVariant(ProductVariantRequest model, Product product) {
         ProductVariant pv;
         if (model.getId() != null) {
             pv = productVariantRepo.getProductVariantById(model.getId());
@@ -64,14 +56,9 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         } else {
             pv.setOldPrice(model.getPrice());
         }
-        Map data = cloudinaryService.uploadFile(model.getPreviewImage(), PRODUCT_IMAGE_FOLDER);
-        pv.setImageUrl((String) data.get("url"));
-        pv.setImagePath(PRODUCT_IMAGE_FOLDER + "/" + data.get("display_name"));
-        pv = productVariantRepo.save(pv);
-
         pv.setColors(colorService.getColorsByIds(model.getColorIds()));
-        List<ProductImage> productImages = productImageService.saveAll(pv, model.getImages());
-        pv.setProductImages(productImages);
+        pv.setImagePreview(mediaService.getMediaById(model.getPreviewMediaId()));
+        pv.setProductVariantMedia(mediaService.findAllByIds(model.getMediaIds()));
         productVariantRepo.save(pv);
     }
 
@@ -83,14 +70,6 @@ public class ProductVariantServiceImpl implements ProductVariantService {
     @Override
     public void update(ProductVariant ProductVariant) {
         productVariantRepo.save(ProductVariant);
-    }
-
-    @Override
-    public void update(ProductDetailRequest detailRequest) {
-        ProductVariant pv = productVariantRepo.getProductVariantById(detailRequest.getProductVariantId());
-        for (ProductDetailRequestModel model : detailRequest.getModels()) {
-            productDetailService.update(pv, model);
-        }
     }
 
     @Override

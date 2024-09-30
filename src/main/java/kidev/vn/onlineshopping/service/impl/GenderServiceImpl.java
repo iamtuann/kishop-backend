@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -21,6 +20,6 @@ public class GenderServiceImpl implements GenderService {
 
     @Override
     public List<Gender> getGendersByListId(List<Long> ids) {
-        return ids.stream().map(genderRepo::getGenderById).collect(Collectors.toList());
+        return genderRepo.findAllById(ids);
     }
 }

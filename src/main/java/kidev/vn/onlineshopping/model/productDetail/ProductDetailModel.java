@@ -1,4 +1,4 @@
-package kidev.vn.onlineshopping.model.product;
+package kidev.vn.onlineshopping.model.productDetail;
 
 import kidev.vn.onlineshopping.entity.ProductDetail;
 import kidev.vn.onlineshopping.entity.Size;
