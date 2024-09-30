@@ -15,7 +15,7 @@ public class MediaModel {
     private String name;
     private Long folderId;
     private String url;
-    private String filePath;
+    private String publicId;
     private String contentType;
     private Date uploadDate;
 
@@ -24,7 +24,7 @@ public class MediaModel {
         this.name = media.getName();
         this.folderId = media.getFolder() == null ? null : media.getFolder().getId();
         this.url = media.getUrl();
-        this.filePath = media.getFilePath();
+        this.publicId = media.getPublicId();
         this.contentType = media.getContentType();
         this.uploadDate = media.getUploadDate();
     }

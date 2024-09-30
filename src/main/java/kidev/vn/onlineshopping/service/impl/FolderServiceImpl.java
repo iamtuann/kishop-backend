@@ -51,4 +51,9 @@ public class FolderServiceImpl implements FolderService {
         folder.setName(folderModel.getName());
         return new FolderModel(folderRepo.save(folder));
     }
+
+    @Override
+    public void delete(Long id) {
+        folderRepo.deleteById(id);
+    }
 }

@@ -27,8 +27,8 @@ public class Media {
     @Column(name = "url")
     private String url;
 
-    @Column(name = "file_path")
-    private String filePath;
+    @Column(name = "public_id")
+    private String publicId;
 
     @Column(name = "content_type")
     private String contentType;

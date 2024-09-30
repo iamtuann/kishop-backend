@@ -50,7 +50,7 @@ public class FolderController {
             FolderModel folderModel = folderService.create(request);
             response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
             response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-            response.setMessage("create folders success");
+            response.setMessage("create folder success");
             response.setOutput(folderModel);
         } catch (Exception e) {
             response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
@@ -61,17 +61,44 @@ public class FolderController {
         return response;
     }
 
-    @PutMapping("")
-    public CommonResponse<FolderModel> updateFolder(@RequestBody FolderModel request) {
+    @PutMapping("/{id}")
+    public CommonResponse<FolderModel> updateFolder(
+            @PathVariable Long id,
+            @RequestBody FolderModel request
+    ) {
         CommonResponse<FolderModel> response = new CommonResponse<>();
         try {
-            Folder folder = folderService.getFolderById(request.getId());
+            Folder folder = folderService.getFolderById(id);
             if (folder != null) {
                 FolderModel folderModel = folderService.update(request);
                 response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
                 response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
-                response.setMessage("update folders success");
+                response.setMessage("update folder success");
                 response.setOutput(folderModel);
+            } else {
+                response.setStatusCode(Constants.RestApiReturnCode.NOT_FOUND);
+                response.setError(Constants.RestApiReturnCode.NOT_FOUND_TXT);
+                response.setMessage("cannot find folder");
+            }
+        } catch (Exception e) {
+            response.setStatusCode(Constants.RestApiReturnCode.SYS_ERROR);
+            response.setMessage("System error");
+            response.setError(Constants.RestApiReturnCode.SYS_ERROR_TXT);
+            logger.error("createOrder", e);
+        }
+        return response;
+    }
+
+    @DeleteMapping("/{id}")
+    public CommonResponse<?> updateFolder(@PathVariable Long id) {
+        CommonResponse<?> response = new CommonResponse<>();
+        try {
+            Folder folder = folderService.getFolderById(id);
+            if (folder != null) {
+                folderService.delete(id);
+                response.setStatusCode(Constants.RestApiReturnCode.SUCCESS);
+                response.setError(Constants.RestApiReturnCode.SUCCESS_TXT);
+                response.setMessage("delete folder success");
             } else {
                 response.setStatusCode(Constants.RestApiReturnCode.NOT_FOUND);
                 response.setError(Constants.RestApiReturnCode.NOT_FOUND_TXT);

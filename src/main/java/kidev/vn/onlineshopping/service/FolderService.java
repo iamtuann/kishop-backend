@@ -11,4 +11,6 @@ public interface FolderService {
     FolderModel create(FolderModel folderModel);
 
     FolderModel update(FolderModel folderModel);
+
+    void delete(Long id);
 }
