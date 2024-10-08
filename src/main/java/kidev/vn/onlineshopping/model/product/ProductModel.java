@@ -3,6 +3,7 @@ package kidev.vn.onlineshopping.model.product;
 import kidev.vn.onlineshopping.entity.Product;
 import kidev.vn.onlineshopping.entity.ProductVariant;
 import kidev.vn.onlineshopping.model.brand.BrandModel;
+import kidev.vn.onlineshopping.model.productVariant.ProductVariantModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

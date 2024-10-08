@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class ItemDetail extends ItemBasic {
     private String name;
     private String variantName;
     private String slug;
-    private String color;
+    private List<String> colors;
     private String size;
     private String brand;
     private String thumbnail;
@@ -32,10 +34,10 @@ public class ItemDetail extends ItemBasic {
         this.name = product.getName();
         this.variantName = pd.getProductVariant().getName();
         this.slug = product.getSlug();
-        this.color = pd.getProductVariant().getColor().getName();
+        this.colors = pd.getProductVariant().getNameColors();
         this.size = pd.getSize().getName();
         this.brand = product.getBrand().getName();
-        this.thumbnail = pd.getProductVariant().getImageUrl();
+        this.thumbnail = pd.getProductVariant().getImagePreview().getUrl();
     }
 
     public ItemDetail(CartItem cartItem) {
@@ -46,10 +48,10 @@ public class ItemDetail extends ItemBasic {
         this.name = product.getName();
         this.variantName = cartItem.getProductVariant().getName();
         this.slug = product.getSlug();
-        this.color = cartItem.getProductVariant().getColor().getName();
+        this.colors = cartItem.getProductVariant().getNameColors();
         this.size = cartItem.getProductDetail().getSize().getName();
         this.brand = product.getBrand().getName();
-        this.thumbnail = cartItem.getProductVariant().getImageUrl();
+        this.thumbnail = cartItem.getProductVariant().getImagePreview().getUrl();
     }
 
     public ItemDetail(OrderItem orderItem) {
@@ -60,9 +62,9 @@ public class ItemDetail extends ItemBasic {
         this.name = product.getName();
         this.variantName = orderItem.getProductVariant().getName();
         this.slug = product.getSlug();
-        this.color = orderItem.getProductVariant().getColor().getName();
+        this.colors = orderItem.getProductVariant().getNameColors();
         this.size = orderItem.getProductDetail().getSize().getName();
         this.brand = product.getBrand().getName();
-        this.thumbnail = orderItem.getProductVariant().getImageUrl();
+        this.thumbnail = orderItem.getProductVariant().getImagePreview().getUrl();
     }
 }

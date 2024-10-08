@@ -42,20 +42,6 @@ public class Product {
             inverseJoinColumns = {@JoinColumn(name = "category_id", referencedColumnName = "id")})
     private List<Category> categories;
 
-    @ManyToMany
-    @JoinTable(
-            name = "product_size",
-            joinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "size_id", referencedColumnName = "id")})
-    private List<Size> sizes;
-
-    @ManyToMany
-    @JoinTable(
-            name = "product_color",
-            joinColumns = {@JoinColumn(name = "product_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "color_id", referencedColumnName = "id")})
-    private List<Color> colors;
-
     @OneToMany(mappedBy = "product",fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     List<ProductVariant> productVariants;

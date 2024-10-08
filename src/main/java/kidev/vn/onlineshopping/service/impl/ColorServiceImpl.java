@@ -20,6 +20,11 @@ public class ColorServiceImpl implements ColorService {
     }
 
     @Override
+    public List<Color> getColorsByIds(List<Long> ids) {
+        return colorRepo.findAllById(ids);
+    }
+
+    @Override
     public void create(Color color) {
         colorRepo.save(color);
     }
@@ -32,11 +37,6 @@ public class ColorServiceImpl implements ColorService {
     @Override
     public void delete(Color color) {
         colorRepo.delete(color);
-    }
-
-    @Override
-    public Color getColorByEngName(String engName) {
-        return colorRepo.getColorByEngName(engName);
     }
 
     @Override

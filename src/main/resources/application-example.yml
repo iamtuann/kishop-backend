@@ -1,0 +1,25 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: db_name
+    url: db_url
+    password: db_password
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2MB
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+security:
+  jwt:
+    token:
+      secret-key: secret-key
+      expire-length: 2592000000 #30 days
+      jwtCookieName: cookie-name
+
+store-folder: path-to-folder
+store-url: http://localhost:8081/resources/
